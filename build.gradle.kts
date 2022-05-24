@@ -1,6 +1,6 @@
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.scripting.definitions.StandardScriptDefinition.platform
 
 plugins {
     kotlin("multiplatform")
@@ -27,11 +27,15 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                api("net.mamoe:mirai-core:2.11.0")
+                api("net.mamoe:mirai-logging-log4j2:2.11.0")
             }
         }
         val jvmTest by getting
     }
 }
+
+
 
 compose.desktop {
     application {
