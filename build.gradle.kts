@@ -1,3 +1,4 @@
+import com.google.gson.internal.bind.TypeAdapters.URI
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.scripting.definitions.StandardScriptDefinition.platform
@@ -14,6 +15,7 @@ repositories {
     google()
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven( "https://jitpack.io")
 }
 
 kotlin {
@@ -27,6 +29,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("com.github.app-outlet:karavel:1.0.0")
                 api("net.mamoe:mirai-core:2.11.0")
                 api("net.mamoe:mirai-logging-log4j2:2.11.0")
             }
