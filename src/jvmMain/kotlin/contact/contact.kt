@@ -1,6 +1,6 @@
 package contact
 
-class Contacts(val type:String, val id:String){
-    var nickname:String =""
-     
+class Contacts(val type:String){
+    var id:Long = 0L
+    var name:String = ""
 }
