@@ -3,7 +3,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,18 +28,16 @@ import androidx.compose.ui.unit.dp
 import contact.Contacts
 import io.appoutlet.karavel.Karavel
 import io.appoutlet.karavel.Page
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import message.Messages
 import net.mamoe.mirai.contact.Friend
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.event.events.MessageEvent
 import org.xml.sax.InputSource
 import java.io.File
 import java.io.IOException
 import java.net.URL
-import kotlin.io.use
 
 @Composable
 fun <T> AsyncImage(
@@ -96,8 +93,9 @@ fun loadXmlImageVector(url: String, density: Density): ImageVector =
     URL(url).openStream().buffered().use { loadXmlImageVector(InputSource(it), density) }
 
 val nav = Karavel(MainPage())
-val QQgroupsList =  mutableStateListOf<Group>()
+val QQgroupsList = mutableStateListOf<Group>()
 val QQcontactList = mutableStateListOf<Friend>()
+val AllContactsMap = mutableMapOf<String, MutableMap<String, Contacts>>()
 
 @Composable
 fun leftSidebar() {
@@ -128,8 +126,8 @@ fun leftSidebar() {
 
 @Composable
 fun lazyScrollable() {//联系人列表
-    val selected = remember { mutableStateOf(Contacts("")) }
-    Row(modifier = Modifier.fillMaxSize()){
+    val selected = remember { mutableStateOf(Pair("None", "")) }
+    Row(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier.fillMaxHeight().width(233.dp)
                 .background(color = Color(180, 180, 180))
@@ -141,39 +139,39 @@ fun lazyScrollable() {//联系人列表
                 modifier = Modifier.fillMaxSize().padding(end = 12.dp),
                 state = state
             ) {
-                items(QQgroupsList){
-                    Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(4.dp)).clickable {
-                        selected.value = Contacts("QQ_Group")
-                        selected.value.id = it.id
-                        selected.value.name = it.name
-                    }){
-                        Row{
+                items(QQgroupsList) {
+                    Box(
+                        modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(4.dp))
+                            .clickable {
+                                selected.value = Pair("QQ_Group", it.id.toString())
+                            }) {
+                        Row {
                             AsyncImage(
                                 load = { loadImageBitmap("https://p.qlogo.cn/gh/${it.id}/${it.id}/0") },
                                 painterFor = { remember { BitmapPainter(it) } },
                                 modifier = Modifier.size(64.dp).clip(RoundedCornerShape(4.dp)),
                                 contentDescription = "Group Avatar"
                             )
-                            Box(modifier = Modifier.padding(4.dp).fillMaxSize()){
+                            Box(modifier = Modifier.padding(4.dp).fillMaxSize()) {
                                 Text(text = it.name)
                             }
                         }
                     }
                 }
-                items(QQcontactList){
-                    Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(4.dp)).clickable {
-                        selected.value = Contacts("QQ_Friend")
-                        selected.value.id = it.id
-                        selected.value.name = it.nameCardOrNick
-                    }){
-                        Row{
+                items(QQcontactList) {
+                    Box(
+                        modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(4.dp))
+                            .clickable {
+                                selected.value = Pair("QQ_Friend", it.id.toString())
+                            }) {
+                        Row {
                             AsyncImage(
                                 load = { loadImageBitmap("https://q1.qlogo.cn/g?b=qq&s=0&nk=${it.id}") },
                                 painterFor = { remember { BitmapPainter(it) } },
                                 modifier = Modifier.size(64.dp).clip(RoundedCornerShape(4.dp)),
                                 contentDescription = "Group Avatar"
                             )
-                            Box(modifier = Modifier.padding(4.dp).fillMaxSize()){
+                            Box(modifier = Modifier.padding(4.dp).fillMaxSize()) {
                                 Text(text = it.nameCardOrNick)
                             }
                         }
@@ -187,22 +185,37 @@ fun lazyScrollable() {//联系人列表
                 )
             )
         }
-        if(selected.value.type!=""){
-            chatUI(selected.value)
+        if (selected.value.first != "None") {
+            chatUI(selected.value.first, selected.value.second)
         }
     }
 }
 
 @Composable
-fun chatUI(contact:Contacts){
-    Box(modifier = Modifier.fillMaxSize()){
-        Column(modifier = Modifier.fillMaxSize()){
-            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.2f)){
-                Text(contact.name)
+fun chatUI(type: String, id: String) {
+    val contact = AllContactsMap[type]!![id]
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)) {
+                Row() {
+                    Text(contact?.name.toString(), modifier = Modifier.padding(10.dp))
+                    Text(contact?.id.toString(), modifier = Modifier.padding(10.dp))
+                }
             }
-            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.4f)){
-                LazyColumn(modifier = Modifier.fillMaxSize()){
-
+            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f)) {
+                val state = rememberLazyListState()
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.fillMaxSize(),
+                    state = state
+                ) {
+                    items(contact!!.messageLists) {
+                        Box() {
+                            Row() {
+                                Text(it.content, modifier = Modifier.padding(4.dp))
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -257,15 +270,27 @@ class SettingsPage : Page() {
                                 )
                             }
                             Button(onClick = {
-                                userQQBot= botSets(qqid.value.toLong(),password.value)
-                                CoroutineScope(Dispatchers.IO).launch {
+                                userQQBot = botSets(qqid.value.toLong(), password.value)
+                                CoroutineScope(Dispatchers.IO).async {
                                     userQQBot.userBot.login()
                                     QQcontactList.clear()
                                     QQgroupsList.clear()
-                                    userQQBot.userBot.friends.forEach { QQcontactList.add(it) }
-                                    userQQBot.userBot.groups.forEach { QQgroupsList.add(it) }
+                                    AllContactsMap["QQ_Friend"] = mutableMapOf()
+                                    AllContactsMap["QQ_Group"] = mutableMapOf()
+                                    userQQBot.userBot.friends.forEach {
+                                        QQcontactList.add(it)
+                                        AllContactsMap["QQ_Friend"]!![it.id.toString()] =
+                                            Contacts("QQ_Friend", it.id.toString())
+                                        AllContactsMap["QQ_Friend"]!![it.id.toString()]!!.name = it.nameCardOrNick
+                                    }
+                                    userQQBot.userBot.groups.forEach {
+                                        QQgroupsList.add(it)
+                                        AllContactsMap["QQ_Group"]!![it.id.toString()] =
+                                            Contacts("QQ_Group", it.id.toString())
+                                        AllContactsMap["QQ_Group"]!![it.id.toString()]!!.name = it.name
+                                    }
                                 }
-                            }){
+                            }) {
                                 Text("登录QQ")
                             }
                         }
@@ -282,6 +307,7 @@ fun App() {
         nav.currentPage().content()
     }
 }
+
 
 
 
