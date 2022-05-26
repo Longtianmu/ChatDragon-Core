@@ -1,1 +1,4 @@
-CREATE TABLE ChatHistory
+CREATE TABLE QQ_ChatHistory(
+    userID TEXT NOT NULL
+
+);

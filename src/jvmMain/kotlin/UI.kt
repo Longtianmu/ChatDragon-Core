@@ -202,7 +202,7 @@ fun chatUI(type: String, id: String) {
                     Text(contact?.id.toString(), modifier = Modifier.padding(10.dp))
                 }
             }
-            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f)) {
+            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.65f)) {
                 val state = rememberLazyListState()
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -217,6 +217,12 @@ fun chatUI(type: String, id: String) {
                         }
                     }
                 }
+                VerticalScrollbar(
+                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                    adapter = rememberScrollbarAdapter(
+                        scrollState = state
+                    )
+                )
             }
         }
     }
