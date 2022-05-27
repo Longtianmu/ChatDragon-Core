@@ -4,19 +4,11 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("com.squareup.sqldelight") version("1.5.3")
+    id("com.squareup.sqldelight") version ("1.5.3")
 }
 
 group = "net.ltm"
 version = "1.0-SNAPSHOT"
-
-repositories {
-    google()
-    mavenCentral()
-    gradlePluginPortal()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-    maven( "https://jitpack.io")
-}
 
 buildscript {
     repositories {
@@ -24,8 +16,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath ("com.squareup.sqldelight:gradle-plugin:1.5.3")
+        classpath("com.squareup.sqldelight:gradle-plugin:1.5.3")
     }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven("https://jitpack.io")
 }
 
 kotlin {
@@ -39,10 +39,11 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation ("com.squareup.sqldelight:sqlite-driver:1.5.3")
+                implementation("com.squareup.sqldelight:sqlite-driver:1.5.3")
                 implementation("com.github.app-outlet:karavel:1.0.0")
-                api("net.mamoe:mirai-core:2.11.0")
-                api("net.mamoe:mirai-logging-log4j2:2.11.0")
+                implementation("com.squareup.sqldelight:core:1.5.3")
+                api("net.mamoe:mirai-core:2.11.1")
+                api("net.mamoe:mirai-logging-log4j2:2.11.1")
             }
         }
         val jvmTest by getting
@@ -51,10 +52,8 @@ kotlin {
 
 sqldelight {
     database("ChatHistory") {
-        packageName = "net.ltm.db"
-        sourceFolders = listOf("sqldelight")
-        schemaOutputDirectory = file("build/dbs")
-        dialect = "sqlite:3.24"
+        packageName = "net.ltm"
+        dialect = "sqlite:3.25"
         verifyMigrations = true
     }
 }

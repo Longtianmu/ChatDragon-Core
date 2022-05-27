@@ -1,0 +1,9 @@
+import java.lang.String;
+import java.util.List;
+import java.util.Map;
+import message.Messages;
+
+CREATE TABLE QQ_ChatHistory(
+    userID TEXT NOT NULL,
+    contactID TEXT AS Map<String,List<Messages>> NOT NULL
+);
