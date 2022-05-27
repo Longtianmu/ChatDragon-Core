@@ -2,7 +2,7 @@
   <artifact type="jar" name="Chat-Dragon-jvm-1.0-SNAPSHOT">
     <output-path>$PROJECT_DIR$/build/libs</output-path>
     <root id="archive" name="Chat-Dragon-jvm-1.0-SNAPSHOT.jar">
-      <element id="module-output" name="Chat-Dragon.commonMain" />
+      <element id="module-output" name="Chat-Dragon.jvmMain" />
     </root>
   </artifact>
 </component>

@@ -4,21 +4,10 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("com.squareup.sqldelight") version ("1.5.3")
 }
 
 group = "net.ltm"
 version = "1.0-SNAPSHOT"
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.squareup.sqldelight:gradle-plugin:1.5.3")
-    }
-}
 
 repositories {
     google()
@@ -39,22 +28,14 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation("com.squareup.sqldelight:sqlite-driver:1.5.3")
+                implementation("org.kodein.db:kodein-db:0.9.0-beta")
+                implementation("org.kodein.db:kodein-db-serializer-kotlinx:0.9.0-beta")
                 implementation("com.github.app-outlet:karavel:1.0.0")
-                implementation("com.squareup.sqldelight:core:1.5.3")
                 api("net.mamoe:mirai-core:2.11.1")
                 api("net.mamoe:mirai-logging-log4j2:2.11.1")
             }
         }
         val jvmTest by getting
-    }
-}
-
-sqldelight {
-    database("ChatHistory") {
-        packageName = "net.ltm"
-        dialect = "sqlite:3.25"
-        verifyMigrations = true
     }
 }
 
