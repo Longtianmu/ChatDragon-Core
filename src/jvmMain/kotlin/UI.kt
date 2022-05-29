@@ -1,4 +1,4 @@
-import adaptors.mirai.botSets
+import adaptors.mirai.initQQ
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,94 +12,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.loadImageBitmap
-import androidx.compose.ui.res.loadSvgPainter
-import androidx.compose.ui.res.loadXmlImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import contact.Contacts
 import io.appoutlet.karavel.Karavel
 import io.appoutlet.karavel.Page
 import kotlinx.coroutines.*
-import message.Messages
 import net.mamoe.mirai.contact.Friend
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.event.events.MessageEvent
-import org.xml.sax.InputSource
-import java.io.File
-import java.io.IOException
-import java.net.URL
-
-@Composable
-fun <T> AsyncImage(
-    load: suspend () -> T,
-    painterFor: @Composable (T) -> Painter,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit,
-) {
-    val image: T? by produceState<T?>(null) {
-        value = withContext(Dispatchers.IO) {
-            try {
-                load()
-            } catch (e: IOException) {
-                // instead of printing to console, you can also write this to log,
-                // or show some error placeholder
-                e.printStackTrace()
-                null
-            }
-        }
-    }
-
-    if (image != null) {
-        Image(
-            painter = painterFor(image!!),
-            contentDescription = contentDescription,
-            contentScale = contentScale,
-            modifier = modifier
-        )
-    }
-}
-
-/* Loading from file with java.io API */
-
-fun loadImageBitmap(file: File): ImageBitmap =
-    file.inputStream().buffered().use(::loadImageBitmap)
-
-fun loadSvgPainter(file: File, density: Density): Painter =
-    file.inputStream().buffered().use { loadSvgPainter(it, density) }
-
-fun loadXmlImageVector(file: File, density: Density): ImageVector =
-    file.inputStream().buffered().use { loadXmlImageVector(InputSource(it), density) }
-
-/* Loading from network with java.net API */
-
-fun loadImageBitmap(url: String): ImageBitmap =
-    URL(url).openStream().buffered().use(::loadImageBitmap)
-
-fun loadSvgPainter(url: String, density: Density): Painter =
-    URL(url).openStream().buffered().use { loadSvgPainter(it, density) }
-
-fun loadXmlImageVector(url: String, density: Density): ImageVector =
-    URL(url).openStream().buffered().use { loadXmlImageVector(InputSource(it), density) }
 
 val nav = Karavel(MainPage())
-val QQgroupsList = mutableStateListOf<Group>()
-val QQcontactList = mutableStateListOf<Friend>()
-val AllContactsMap = mutableMapOf<String, MutableMap<String, Contacts>>()
+val groupListQQ = mutableStateListOf<Group>()
+val contactListQQ = mutableStateListOf<Friend>()
+val contactsMap = mutableMapOf<String, MutableMap<String, Contacts>>()
 
+//左侧边栏
 @Composable
 fun leftSidebar() {
-    Column(//左边栏
+    Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxHeight().width(66.dp).background(Color(247, 242, 243))
     ) {
@@ -117,39 +51,46 @@ fun leftSidebar() {
         Image(
             contentDescription = "Settings",
             painter = painterResource("icons/147-equalizer.svg"),
-            modifier = Modifier.padding(vertical = 200.dp).size(42.dp).clickable {
+            modifier = Modifier.padding(top = 400.dp).size(42.dp).clickable {
                 nav.navigate(SettingsPage())
             }
         )
     }
-}//左侧边栏
+}
 
+//联系人列表
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun lazyScrollable() {//联系人列表
+fun sessionList() {
     val selected = remember { mutableStateOf(Pair("None", "")) }
     Row(modifier = Modifier.fillMaxSize()) {
         Box(
-            modifier = Modifier.fillMaxHeight().width(233.dp)
+            modifier = Modifier.fillMaxHeight().width(250.dp)
                 .background(color = Color(180, 180, 180))
                 .padding(10.dp)
         ) {
             val state = rememberLazyListState()
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
                 modifier = Modifier.fillMaxSize().padding(end = 12.dp),
                 state = state
             ) {
-                items(QQgroupsList) {
+                stickyHeader {
+                    Box {
+                        Text("联系人列表", modifier = Modifier.padding(4.dp).clip(shape = RoundedCornerShape(4.dp)))
+                    }
+                }
+                items(groupListQQ) {
                     Box(
-                        modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(4.dp))
+                        modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
                             .clickable {
                                 selected.value = Pair("QQ_Group", it.id.toString())
                             }) {
                         Row {
                             AsyncImage(
-                                load = { loadImageBitmap("https://p.qlogo.cn/gh/${it.id}/${it.id}/0") },
+                                load = { loadImageBitmap(it.avatarUrl) },
                                 painterFor = { remember { BitmapPainter(it) } },
-                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(4.dp)),
+                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
                                 contentDescription = "Group Avatar"
                             )
                             Box(modifier = Modifier.padding(4.dp).fillMaxSize()) {
@@ -158,18 +99,18 @@ fun lazyScrollable() {//联系人列表
                         }
                     }
                 }
-                items(QQcontactList) {
+                items(contactListQQ) {
                     Box(
-                        modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(4.dp))
+                        modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
                             .clickable {
                                 selected.value = Pair("QQ_Friend", it.id.toString())
                             }) {
                         Row {
                             AsyncImage(
-                                load = { loadImageBitmap("https://q1.qlogo.cn/g?b=qq&s=0&nk=${it.id}") },
+                                load = { loadImageBitmap(it.avatarUrl) },
                                 painterFor = { remember { BitmapPainter(it) } },
-                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(4.dp)),
-                                contentDescription = "Group Avatar"
+                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                                contentDescription = "Friend Avatar"
                             )
                             Box(modifier = Modifier.padding(4.dp).fillMaxSize()) {
                                 Text(text = it.nameCardOrNick)
@@ -191,13 +132,14 @@ fun lazyScrollable() {//联系人列表
     }
 }
 
+//聊天界面
 @Composable
 fun chatUI(type: String, id: String) {
-    val contact = AllContactsMap[type]!![id]
+    val contact = contactsMap[type]!![id]
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)) {
-                Row() {
+                Row {
                     Text(contact?.name.toString(), modifier = Modifier.padding(10.dp))
                     Text(contact?.id.toString(), modifier = Modifier.padding(10.dp))
                 }
@@ -209,12 +151,8 @@ fun chatUI(type: String, id: String) {
                     modifier = Modifier.fillMaxSize(),
                     state = state
                 ) {
-                    items(contact!!.messageLists) {
-                        Box() {
-                            Row() {
-                                Text(it.content, modifier = Modifier.padding(4.dp))
-                            }
-                        }
+                    items(contact) {
+                        //TODO(添加统一的MessageCard)
                     }
                 }
                 VerticalScrollbar(
@@ -239,7 +177,7 @@ class MainPage : Page() {
             Scaffold {
                 Row(modifier = Modifier.fillMaxSize()) {
                     leftSidebar()
-                    lazyScrollable()
+                    sessionList()
                 }
             }
         }
@@ -249,8 +187,8 @@ class MainPage : Page() {
 class SettingsPage : Page() {
     @Composable
     override fun content() {
-        var qqid = remember { mutableStateOf("") }
-        var password = remember { mutableStateOf("") }
+        val qqid = remember { mutableStateOf("") }
+        val password = remember { mutableStateOf("") }
         Card(
             modifier = Modifier.fillMaxSize(),
             backgroundColor = Color(255, 255, 255),
@@ -266,35 +204,20 @@ class SettingsPage : Page() {
                                     value = qqid.value,
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     onValueChange = { qqid.value = it },
+                                    placeholder = { Text("QQ号") },
                                     modifier = Modifier.padding(12.dp)
                                 )
                                 TextField(
                                     value = password.value,
                                     onValueChange = { password.value = it },
                                     visualTransformation = PasswordVisualTransformation(),
+                                    placeholder = { Text("密码") },
                                     modifier = Modifier.padding(12.dp)
                                 )
                             }
                             Button(onClick = {
-                                userQQBot = botSets(qqid.value.toLong(), password.value)
                                 CoroutineScope(Dispatchers.IO).async {
-                                    userQQBot.userBot.login()
-                                    QQcontactList.clear()
-                                    QQgroupsList.clear()
-                                    AllContactsMap["QQ_Friend"] = mutableMapOf()
-                                    AllContactsMap["QQ_Group"] = mutableMapOf()
-                                    userQQBot.userBot.friends.forEach {
-                                        QQcontactList.add(it)
-                                        AllContactsMap["QQ_Friend"]!![it.id.toString()] =
-                                            Contacts("QQ_Friend", it.id.toString())
-                                        AllContactsMap["QQ_Friend"]!![it.id.toString()]!!.name = it.nameCardOrNick
-                                    }
-                                    userQQBot.userBot.groups.forEach {
-                                        QQgroupsList.add(it)
-                                        AllContactsMap["QQ_Group"]!![it.id.toString()] =
-                                            Contacts("QQ_Group", it.id.toString())
-                                        AllContactsMap["QQ_Group"]!![it.id.toString()]!!.name = it.name
-                                    }
+                                    initQQ(qqid.value, password.value)
                                 }
                             }) {
                                 Text("登录QQ")
@@ -313,7 +236,4 @@ fun App() {
         nav.currentPage().content()
     }
 }
-
-
-
 

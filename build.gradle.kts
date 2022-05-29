@@ -17,6 +17,8 @@ repositories {
     maven("https://jitpack.io")
 }
 
+val exposedVersion: String = "0.38.1"
+
 kotlin {
     jvm {
         compilations.all {
@@ -28,8 +30,10 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation("org.kodein.db:kodein-db:0.9.0-beta")
-                implementation("org.kodein.db:kodein-db-serializer-kotlinx:0.9.0-beta")
+                implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+                implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+                implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+                implementation("org.xerial:sqlite-jdbc:3.30.1")
                 implementation("com.github.app-outlet:karavel:1.0.0")
                 api("net.mamoe:mirai-core:2.11.1")
                 api("net.mamoe:mirai-logging-log4j2:2.11.1")
