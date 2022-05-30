@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import contact.Contacts
 import datas.RenderMessages
+import datas.calculateRelationIDQQ
 import io.appoutlet.karavel.Karavel
 import io.appoutlet.karavel.Page
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +31,9 @@ import kotlinx.coroutines.launch
 import net.mamoe.mirai.contact.Friend
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.nameCardOrNick
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
+import org.jetbrains.exposed.sql.transactions.transaction
 
 val nav = Karavel(MainPage())
 val groupListQQ = mutableStateListOf<Group>()
@@ -142,7 +146,6 @@ fun sessionList() {
 @Composable
 fun chatUI(type: String, id: String) {
     val contact = contactsMap[type]!![id]!!
-    val history = mutableListOf<RenderMessages>()
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             contactBar(contact)
@@ -153,7 +156,11 @@ fun chatUI(type: String, id: String) {
 
 @Composable
 fun chatBar(contact: Contacts) {
+    val history = mutableListOf<RenderMessages>()
+    val relation = calculateRelationIDQQ(userQQBot.userBot.id,contact.id)
+    transaction(chatHistoryQQ){
 
+    }
     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.65f)) {
         val state = rememberLazyListState()
         LazyColumn(
@@ -161,7 +168,9 @@ fun chatBar(contact: Contacts) {
             modifier = Modifier.fillMaxSize(),
             state = state
         ) {
-
+            items(history){
+                buildMessageCard(it)
+            }
         }
         VerticalScrollbar(
                 modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),

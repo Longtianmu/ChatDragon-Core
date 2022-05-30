@@ -19,11 +19,12 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import userQQBot
 
 fun messageListener(contacts: Contacts) {
+    val currentID=userQQBot.userBot.id
     when (contacts.type) {
         "QQ_Friend" -> {
             userQQBot.userBot.eventChannel.subscribeAlways<FriendMessageEvent> {
                 if (it.sender.id == contacts.id.toLong()) {
-                    val relations = calculateRelationIDQQ(userQQBot.userBot.id, it.sender.id.toString() + "QID")
+                    val relations = calculateRelationIDQQ(currentID, it.sender.id.toString() + "QID")
                     val times = it.time.toLong()
                     newSuspendedTransaction(Dispatchers.IO, chatHistoryQQ) {
                         addLogger(StdOutSqlLogger)
@@ -51,7 +52,7 @@ fun messageListener(contacts: Contacts) {
         "QQ_Group" -> {
             userQQBot.userBot.eventChannel.subscribeAlways<GroupMessageEvent> {
                 if (it.group.id == contacts.id.toLong()) {
-                    val relations = calculateRelationIDQQ(userQQBot.userBot.id, it.group.id.toString() + "GID")
+                    val relations = calculateRelationIDQQ(currentID, it.group.id.toString() + "GID")
                     val times = it.time.toLong()
                     newSuspendedTransaction(Dispatchers.IO, chatHistoryQQ) {
                         addLogger(StdOutSqlLogger)

@@ -32,6 +32,7 @@ class BotSets(qq: Long, password: String) {
 suspend fun initQQ(qqid: String, password: String) {
     userQQBot = BotSets(qqid.toLong(), password)
     userQQBot.userBot.login()
+    val currentID = qqid.toLong()
     contactListQQ.clear()
     groupListQQ.clear()
     contactsMap["QQ_Friend"] = mutableMapOf()
@@ -50,16 +51,16 @@ suspend fun initQQ(qqid: String, password: String) {
         addLogger(StdOutSqlLogger)
         contactListQQ.forEach { friends ->
             RelationQQ.insert {
-                it[relationID] = calculateRelationIDQQ(qqid.toLong(), friends.id.toString() + "QID")
-                it[userID] = qqid.toLong()
+                it[relationID] = calculateRelationIDQQ(currentID, friends.id.toString() + "QID")
+                it[userID] = currentID
                 it[contactID] = friends.id.toString() + "QID"
             }
             commit()
         }
         groupListQQ.forEach { groups ->
             RelationQQ.insert {
-                it[relationID] = calculateRelationIDQQ(qqid.toLong(), groups.id.toString() + "GID")
-                it[userID] = qqid.toLong()
+                it[relationID] = calculateRelationIDQQ(currentID, groups.id.toString() + "GID")
+                it[userID] = currentID
                 it[contactID] = groups.id.toString() + "GID"
             }
             commit()
