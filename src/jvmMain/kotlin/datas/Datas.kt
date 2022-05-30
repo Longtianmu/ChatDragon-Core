@@ -1,16 +1,15 @@
 package datas
 
 import kotlinx.serialization.Serializable
-import net.mamoe.mirai.message.data.MessageContent
 import org.jetbrains.exposed.sql.Table
 import java.util.*
 
-fun calculateRelationIDQQ(userID:Long, contactID:String):String{
-    return Base64.getEncoder().encodeToString((userID.toString()+contactID).toByteArray())
+fun calculateRelationIDQQ(userID: Long, contactID: String): String {
+    return Base64.getEncoder().encodeToString((userID.toString() + contactID).toByteArray())
 }
 
-fun calculateMsgIDQQ(relationID:String,timeStamp:Long):String{
-    return Base64.getEncoder().encodeToString((timeStamp.toString()+relationID).toByteArray())
+fun calculateMsgIDQQ(relationID: String, timeStamp: Long): String {
+    return Base64.getEncoder().encodeToString((timeStamp.toString() + relationID).toByteArray())
 }
 
 @Serializable
@@ -28,9 +27,9 @@ data class Content(
 )
 
 data class RenderMessages(
-    val msgID:String,
+    val msgID: String,
     val relationID: String,
-    val content: String,
+    val contactID: String,
     val timeStamp: Long,
     val messageContent: String
 )

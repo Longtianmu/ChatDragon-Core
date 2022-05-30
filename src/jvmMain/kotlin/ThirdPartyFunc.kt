@@ -73,17 +73,17 @@ fun loadSvgPainter(url: String, density: Density): Painter =
 fun loadXmlImageVector(url: String, density: Density): ImageVector =
     URL(url).openStream().buffered().use { androidx.compose.ui.res.loadXmlImageVector(InputSource(it), density) }
 
-fun downloadPicture(url:String){
+fun downloadPicture(url: String) {
     val client = OkHttpClient()
     val request = Request.Builder().get()
         .url(url)
         .build()
     val response = client.newCall(request).execute()
-    val types= response.headers["Content-Type"]?.toMediaType()?.subtype
+    val types = response.headers["Content-Type"]?.toMediaType()?.subtype
     val inputStream = response.body!!.byteStream()
-    var fos : FileOutputStream
+    val fos: FileOutputStream
     val file = File("./cache/qq/pictures/${userQQBot.userBot.id}/${convertUrlToValidFilePath(url)}")// :转换为~ /转换为% ?转换为+
-    if(!file.exists()){
+    if (!file.exists()) {
         file.mkdirs()
     }
     try {
@@ -91,11 +91,12 @@ fun downloadPicture(url:String){
         fos.write(inputStream.readBytes())
         fos.flush()
         fos.close()
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
     }
-    catch (e:java.lang.Exception) {e.printStackTrace()}
     return
 }//https://blog.csdn.net/weixin_45509601/article/details/115150181
 
-fun convertUrlToValidFilePath(url:String):String{
-    return url.replace(":","~").replace("/","%").replace("?","+")
+fun convertUrlToValidFilePath(url: String): String {
+    return url.replace(":", "~").replace("/", "%").replace("?", "+")
 }

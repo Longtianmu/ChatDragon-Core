@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import contact.Contacts
+import datas.MessagesQQ
 import datas.RenderMessages
 import datas.calculateRelationIDQQ
 import io.appoutlet.karavel.Karavel
@@ -28,16 +29,19 @@ import io.appoutlet.karavel.Page
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import message.simpleMessageListenerForChatUI
 import net.mamoe.mirai.contact.Friend
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.nameCardOrNick
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 val nav = Karavel(MainPage())
 val groupListQQ = mutableStateListOf<Group>()
 val contactListQQ = mutableStateListOf<Friend>()
+val history = mutableStateListOf<RenderMessages>()
 val contactsMap = mutableMapOf<String, MutableMap<String, Contacts>>()
 
 //左侧边栏
@@ -47,24 +51,20 @@ fun leftSidebar() {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxHeight().width(66.dp).background(Color(247, 242, 243))
     ) {
-        Image(
-            contentDescription = "Chat Lists",
+        Image(contentDescription = "Chat Lists",
             painter = painterResource("icons/112-bubbles3.svg"),
             modifier = Modifier.padding(vertical = 20.dp).size(42.dp).clickable {
                 nav.navigate(MainPage())
-            }
-        )
+            })
         /*Image(
             contentDescription = "Contact Lists",
             painter = painterResource("")
         )*/
-        Image(
-            contentDescription = "Settings",
+        Image(contentDescription = "Settings",
             painter = painterResource("icons/147-equalizer.svg"),
             modifier = Modifier.padding(top = 400.dp).size(42.dp).clickable {
                 nav.navigate(SettingsPage())
-            }
-        )
+            })
     }
 }
 
@@ -75,9 +75,7 @@ fun sessionList() {
     val selected = remember { mutableStateOf(Pair("None", "")) }
     Row(modifier = Modifier.fillMaxSize()) {
         Box(
-            modifier = Modifier.fillMaxHeight().width(250.dp)
-                .background(color = Color(180, 180, 180))
-                .padding(10.dp)
+            modifier = Modifier.fillMaxHeight().width(250.dp).background(color = Color(180, 180, 180)).padding(10.dp)
         ) {
             val state = rememberLazyListState()
             LazyColumn(
@@ -91,11 +89,10 @@ fun sessionList() {
                     }
                 }
                 items(groupListQQ) {
-                    Box(
-                        modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
-                            .clickable {
-                                selected.value = Pair("QQ_Group", it.id.toString())
-                            }) {
+                    Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
+                        .clickable {
+                            selected.value = Pair("QQ_Group", it.id.toString())
+                        }) {
                         Row {
                             AsyncImage(
                                 load = { loadImageBitmap(it.avatarUrl) },
@@ -110,11 +107,10 @@ fun sessionList() {
                     }
                 }
                 items(contactListQQ) {
-                    Box(
-                        modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
-                            .clickable {
-                                selected.value = Pair("QQ_Friend", it.id.toString())
-                            }) {
+                    Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
+                        .clickable {
+                            selected.value = Pair("QQ_Friend", it.id.toString())
+                        }) {
                         Row {
                             AsyncImage(
                                 load = { loadImageBitmap(it.avatarUrl) },
@@ -130,8 +126,7 @@ fun sessionList() {
                 }
             }
             VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(), adapter = rememberScrollbarAdapter(
                     scrollState = state
                 )
             )
@@ -146,41 +141,14 @@ fun sessionList() {
 @Composable
 fun chatUI(type: String, id: String) {
     val contact = contactsMap[type]!![id]!!
+    history.clear()
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             contactBar(contact)
-            chatBar(contact)
+            chatBar(contact, type)
         }
     }
 }
-
-@Composable
-fun chatBar(contact: Contacts) {
-    val history = mutableListOf<RenderMessages>()
-    val relation = calculateRelationIDQQ(userQQBot.userBot.id,contact.id)
-    transaction(chatHistoryQQ){
-
-    }
-    Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.65f)) {
-        val state = rememberLazyListState()
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.fillMaxSize(),
-            state = state
-        ) {
-            items(history){
-                buildMessageCard(it)
-            }
-        }
-        VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-        adapter = rememberScrollbarAdapter(
-            scrollState = state
-        )
-        )
-    }
-}
-
 
 @Composable
 fun contactBar(contact: Contacts) {
@@ -204,13 +172,58 @@ fun contactBar(contact: Contacts) {
     }
 }
 
+
+@Composable
+fun chatBar(contact: Contacts, type: String) {
+    val id = when (type) {
+        "QQ_Friend" -> "QID"
+        "QQ_Group" -> "GID"
+        else -> ""
+    }
+    val relation = calculateRelationIDQQ(userQQBot.userBot.id, contact.id+id)
+    CoroutineScope(Dispatchers.IO).launch {
+        transaction(chatHistoryQQ) {
+            MessagesQQ
+                .select { (MessagesQQ.relationID eq relation) and (MessagesQQ.contactID eq contact.id+id) }
+                .orderBy(MessagesQQ.timeStamp to SortOrder.ASC)
+                .limit(50, 1).forEach {
+                    history.add(
+                        RenderMessages(
+                            it[MessagesQQ.msgID],
+                            it[MessagesQQ.relationID],
+                            it[MessagesQQ.contactID],
+                            it[MessagesQQ.timeStamp],
+                            it[MessagesQQ.messageContent]
+                        )
+                    )
+                }
+            simpleMessageListenerForChatUI(contact)
+        }
+    }
+    println(history.toString())
+    Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.65f)) {
+        val state = rememberLazyListState()
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxSize(), state = state
+        ) {
+            items(history) {
+                buildMessageCard(it)
+            }
+        }
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(), adapter = rememberScrollbarAdapter(
+                scrollState = state
+            )
+        )
+    }
+}
+
+
 class MainPage : Page() {
     @Composable
     override fun content() {
         Card(
-            modifier = Modifier.fillMaxSize(),
-            backgroundColor = Color(255, 255, 255),
-            elevation = 0.dp
+            modifier = Modifier.fillMaxSize(), backgroundColor = Color(255, 255, 255), elevation = 0.dp
         ) {
             Scaffold {
                 Row(modifier = Modifier.fillMaxSize()) {
@@ -228,9 +241,7 @@ class SettingsPage : Page() {
         val qqid = remember { mutableStateOf("") }
         val password = remember { mutableStateOf("") }
         Card(
-            modifier = Modifier.fillMaxSize(),
-            backgroundColor = Color(255, 255, 255),
-            elevation = 0.dp
+            modifier = Modifier.fillMaxSize(), backgroundColor = Color(255, 255, 255), elevation = 0.dp
         ) {
             Scaffold {
                 Row(modifier = Modifier.fillMaxSize()) {

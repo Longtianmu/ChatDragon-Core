@@ -10,8 +10,11 @@ import kotlinx.coroutines.Dispatchers
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.utils.BotConfiguration
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 import relationQQ
 import userQQBot
 import java.io.File
@@ -32,7 +35,6 @@ class BotSets(qq: Long, password: String) {
 suspend fun initQQ(qqid: String, password: String) {
     userQQBot = BotSets(qqid.toLong(), password)
     userQQBot.userBot.login()
-    val currentID = qqid.toLong()
     contactListQQ.clear()
     groupListQQ.clear()
     contactsMap["QQ_Friend"] = mutableMapOf()
@@ -47,20 +49,20 @@ suspend fun initQQ(qqid: String, password: String) {
         contactsMap["QQ_Group"]!![it.id.toString()] =
             Contacts("QQ_Group", it.id.toString(), it.name, it.avatarUrl)
     }
-    newSuspendedTransaction(Dispatchers.IO, db = relationQQ) {
+    suspendedTransactionAsync(Dispatchers.IO, db = relationQQ) {
         addLogger(StdOutSqlLogger)
         contactListQQ.forEach { friends ->
             RelationQQ.insert {
-                it[relationID] = calculateRelationIDQQ(currentID, friends.id.toString() + "QID")
-                it[userID] = currentID
+                it[relationID] = calculateRelationIDQQ(userQQBot.userBot.id, friends.id.toString() + "QID")
+                it[userID] = userQQBot.userBot.id
                 it[contactID] = friends.id.toString() + "QID"
             }
             commit()
         }
         groupListQQ.forEach { groups ->
             RelationQQ.insert {
-                it[relationID] = calculateRelationIDQQ(currentID, groups.id.toString() + "GID")
-                it[userID] = currentID
+                it[relationID] = calculateRelationIDQQ(userQQBot.userBot.id, groups.id.toString() + "GID")
+                it[userID] = userQQBot.userBot.id
                 it[contactID] = groups.id.toString() + "GID"
             }
             commit()

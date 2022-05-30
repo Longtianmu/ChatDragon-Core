@@ -9,13 +9,13 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 
-lateinit var userQQBot:BotSets
-lateinit var relationQQ:Database
-lateinit var chatHistoryQQ:Database
+lateinit var userQQBot: BotSets
+lateinit var relationQQ: Database
+lateinit var chatHistoryQQ: Database
 
-fun main(){
-    relationQQ=Database.connect("jdbc:sqlite:./data/relationQQ.db", "org.sqlite.JDBC")
-    chatHistoryQQ=Database.connect("jdbc:sqlite:./data/chatHistoryQQ.db", "org.sqlite.JDBC")
+fun main() {
+    relationQQ = Database.connect("jdbc:sqlite:./data/relationQQ.db", "org.sqlite.JDBC")
+    chatHistoryQQ = Database.connect("jdbc:sqlite:./data/chatHistoryQQ.db", "org.sqlite.JDBC")
     transaction(relationQQ) {
         SchemaUtils.createMissingTablesAndColumns(RelationQQ)
     }
