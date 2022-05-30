@@ -11,6 +11,7 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.Density
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.xml.sax.InputSource
@@ -78,14 +79,23 @@ fun downloadPicture(url:String){
         .url(url)
         .build()
     val response = client.newCall(request).execute()
+    val types= response.headers["Content-Type"]?.toMediaType()?.subtype
     val inputStream = response.body!!.byteStream()
     var fos : FileOutputStream
-    val file = File("./cache/mirai/picture/${url}")
+    val file = File("./cache/qq/pictures/${userQQBot.userBot.id}/${convertUrlToValidFilePath(url)}")// :转换为~ /转换为% ?转换为+
+    if(!file.exists()){
+        file.mkdirs()
+    }
     try {
-        fos = FileOutputStream(file)
+        fos = FileOutputStream(File("$file/temp.$types"))
         fos.write(inputStream.readBytes())
-        fos.flush();
+        fos.flush()
         fos.close()
     }
     catch (e:java.lang.Exception) {e.printStackTrace()}
+    return
 }//https://blog.csdn.net/weixin_45509601/article/details/115150181
+
+fun convertUrlToValidFilePath(url:String):String{
+    return url.replace(":","~").replace("/","%").replace("?","+")
+}

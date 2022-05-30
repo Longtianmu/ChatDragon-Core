@@ -6,14 +6,12 @@ import contactsMap
 import datas.RelationQQ
 import datas.calculateRelationIDQQ
 import groupListQQ
-import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.utils.BotConfiguration
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import relationQQ
 import userQQBot
 import java.io.File
@@ -48,7 +46,7 @@ suspend fun initQQ(qqid: String, password: String) {
         contactsMap["QQ_Group"]!![it.id.toString()] =
             Contacts("QQ_Group", it.id.toString(), it.name, it.avatarUrl)
     }
-    suspendedTransactionAsync(Dispatchers.IO, db = relationQQ) {
+    newSuspendedTransaction(Dispatchers.IO, db = relationQQ) {
         addLogger(StdOutSqlLogger)
         contactListQQ.forEach { friends ->
             RelationQQ.insert {

@@ -1,5 +1,7 @@
 package datas
 
+import kotlinx.serialization.Serializable
+import net.mamoe.mirai.message.data.MessageContent
 import org.jetbrains.exposed.sql.Table
 import java.util.*
 
@@ -10,6 +12,28 @@ fun calculateRelationIDQQ(userID:Long, contactID:String):String{
 fun calculateMsgIDQQ(relationID:String,timeStamp:Long):String{
     return Base64.getEncoder().encodeToString((timeStamp.toString()+relationID).toByteArray())
 }
+
+@Serializable
+data class Messages(
+    val sender: String,
+    val senderName: String,
+    val senderAvatar: String,
+    val content: MutableList<Content>
+)
+
+@Serializable
+data class Content(
+    val type: String,
+    val content: String
+)
+
+data class RenderMessages(
+    val msgID:String,
+    val relationID: String,
+    val content: String,
+    val timeStamp: Long,
+    val messageContent: String
+)
 
 object RelationQQ : Table("relationQQ") {
     val relationID = text("RelationID").uniqueIndex()
@@ -26,3 +50,4 @@ object MessagesQQ : Table("messagesQQ") {
     val messageContent = text("MessageContent")//msgID表示一条消息 由contact timestamp relation构建而来
     override val primaryKey = PrimaryKey(msgID, name = "MsgIDs")
 }
+

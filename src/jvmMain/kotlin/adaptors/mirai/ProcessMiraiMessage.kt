@@ -1,22 +1,22 @@
 package adaptors.mirai
 
+import datas.Content
 import downloadPicture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import message.Content
-import message.Messages
+import datas.Messages
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 
 
-fun convertMiraiMessageToJson(
+suspend fun convertMiraiMessageToJson(
     sender: String, senderName: String, senderAvatar: String, message: MessageChain
 ): String {
     val content: MutableList<Content> = mutableListOf()
-    CoroutineScope(Dispatchers.IO).launch {
+    withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
         for (i in message) {
             when (i) {
                 is PlainText -> {
@@ -39,10 +39,11 @@ fun convertMiraiMessageToJson(
                     content.add(Content("Text", i.content))
                 }
                 else -> {
-                    content.add(Content("Temp", i.contentToString()))
+                    content.add(Content("Temp", i.content))
                 }
             }
         }
+
     }
     return Json.encodeToString(Messages(sender, senderName, senderAvatar, content))
 }

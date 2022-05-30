@@ -7,7 +7,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,9 +21,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import contact.Contacts
+import datas.RenderMessages
 import io.appoutlet.karavel.Karavel
 import io.appoutlet.karavel.Page
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.contact.Friend
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.nameCardOrNick
@@ -135,33 +141,56 @@ fun sessionList() {
 //聊天界面
 @Composable
 fun chatUI(type: String, id: String) {
-    val contact = contactsMap[type]!![id]
+    val contact = contactsMap[type]!![id]!!
+    val history = mutableListOf<RenderMessages>()
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)) {
-                Row {
-                    Text(contact?.name.toString(), modifier = Modifier.padding(10.dp))
-                    Text(contact?.id.toString(), modifier = Modifier.padding(10.dp))
-                }
-            }
-            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.65f)) {
-                val state = rememberLazyListState()
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.fillMaxSize(),
-                    state = state
-                ) {
-                    items(contact) {
-                        //TODO(添加统一的MessageCard)
-                    }
-                }
-                VerticalScrollbar(
-                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                    adapter = rememberScrollbarAdapter(
-                        scrollState = state
+            contactBar(contact)
+            chatBar(contact)
+        }
+    }
+}
+
+@Composable
+fun chatBar(contact: Contacts) {
+
+    Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.65f)) {
+        val state = rememberLazyListState()
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxSize(),
+            state = state
+        ) {
+
+        }
+        VerticalScrollbar(
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+        adapter = rememberScrollbarAdapter(
+            scrollState = state
+        )
+        )
+    }
+}
+
+
+@Composable
+fun contactBar(contact: Contacts) {
+    Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)) {
+        Row {
+            Box() {
+                Row() {
+                    AsyncImage(
+                        load = { loadImageBitmap(contact.avatar) },
+                        painterFor = { remember { BitmapPainter(it) } },
+                        modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                        contentDescription = "Contacts Avatar"
                     )
-                )
+                    Text(contact.name, modifier = Modifier.padding(10.dp))
+                }
+
             }
+            Text(contact.type, modifier = Modifier.padding(10.dp))
+            Text(contact.id, modifier = Modifier.padding(10.dp))
         }
     }
 }
@@ -216,7 +245,7 @@ class SettingsPage : Page() {
                                 )
                             }
                             Button(onClick = {
-                                CoroutineScope(Dispatchers.IO).async {
+                                CoroutineScope(Dispatchers.IO).launch {
                                     initQQ(qqid.value, password.value)
                                 }
                             }) {
