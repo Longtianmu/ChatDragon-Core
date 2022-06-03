@@ -2,7 +2,7 @@ package adaptors.mirai
 
 import datas.Content
 import datas.Messages
-import downloadPicture
+import ui.downloadPicture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

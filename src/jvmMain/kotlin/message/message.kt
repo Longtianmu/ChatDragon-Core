@@ -1,7 +1,6 @@
 package message
 
 import adaptors.mirai.convertMiraiMessageToJson
-import androidx.compose.runtime.MutableState
 import chatHistoryQQ
 import contact.Contacts
 import datas.MessagesQQ
