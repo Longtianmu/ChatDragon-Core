@@ -6,3 +6,5 @@ A Multi Chat Client
 使用Compose for Desktop编写
 
 目前已实现Mirai的QQ登录，使用MACOS协议
+
+初步支持图片/文字信息显示，历史记录保存
