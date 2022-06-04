@@ -185,7 +185,7 @@ fun chatBar(contact: Contacts, type: String) {
         transaction(chatHistoryQQ) {
             MessagesQQ
                 .select { (MessagesQQ.relationID eq relation) and (MessagesQQ.contactID eq contact.id+id) }
-                .orderBy(MessagesQQ.timeStamp to SortOrder.ASC)
+                .orderBy(MessagesQQ.timeStamp to SortOrder.DESC)
                 .limit(50, 1).forEach {
                     history.add(
                         RenderMessages(
@@ -197,8 +197,9 @@ fun chatBar(contact: Contacts, type: String) {
                         )
                     )
                 }
-            simpleMessageListenerForChatUI(contact)
         }
+        history.sortBy { it.timeStamp }
+        simpleMessageListenerForChatUI(contact)
     }
     println(history.toString())
     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.65f)) {
