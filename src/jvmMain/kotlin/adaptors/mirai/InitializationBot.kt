@@ -13,7 +13,6 @@ import net.mamoe.mirai.utils.BotConfiguration
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 import relationQQ
 import userQQBot
@@ -32,9 +31,17 @@ class BotSets(qq: Long, password: String) {
     }
 }
 
-suspend fun initQQ(qqid: String, password: String) {
-    userQQBot = BotSets(qqid.toLong(), password)
-    userQQBot.userBot.login()
+suspend fun initQQ(qqid: String, password: String): String {
+    val processQQID = qqid.replace(" ", "").replace("\n", "")
+    if (!processQQID.matches(Regex("[1-9]([0-9]{5,11})"))) {
+        return "非法的QQ号!"
+    }
+    userQQBot = BotSets(processQQID.toLong(), password)
+    try {
+        userQQBot.userBot.login()
+    } catch (e: Exception) {
+        return e.toString()
+    }
     contactListQQ.clear()
     groupListQQ.clear()
     contactsMap["QQ_Friend"] = mutableMapOf()
@@ -42,12 +49,12 @@ suspend fun initQQ(qqid: String, password: String) {
     userQQBot.userBot.friends.forEach {
         contactListQQ.add(it)
         contactsMap["QQ_Friend"]!![it.id.toString()] =
-            Contacts("QQ_Friend", it.id.toString(), it.nameCardOrNick, it.avatarUrl)
+                Contacts("QQ_Friend", it.id.toString(), it.nameCardOrNick, it.avatarUrl)
     }
     userQQBot.userBot.groups.forEach {
         groupListQQ.add(it)
         contactsMap["QQ_Group"]!![it.id.toString()] =
-            Contacts("QQ_Group", it.id.toString(), it.name, it.avatarUrl)
+                Contacts("QQ_Group", it.id.toString(), it.name, it.avatarUrl)
     }
     suspendedTransactionAsync(Dispatchers.IO, db = relationQQ) {
         addLogger(StdOutSqlLogger)
@@ -67,7 +74,10 @@ suspend fun initQQ(qqid: String, password: String) {
             }
             commit()
         }
-        commit()
     }
-    return
+    return if (!userQQBot.userBot.isOnline) {
+        "未知原因登录失败,可能是风控或其他原因导致"
+    } else {
+        "登录成功"
+    }
 }

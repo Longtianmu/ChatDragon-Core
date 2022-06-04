@@ -10,6 +10,9 @@ import ui.app
 import java.sql.Connection
 
 fun main() {
+    if (!dbPath.exists()) {
+        dbPath.mkdirs()
+    }
     relationQQ = Database.connect("jdbc:sqlite:./data/relationQQ.db", "org.sqlite.JDBC")
     chatHistoryQQ = Database.connect("jdbc:sqlite:./data/chatHistoryQQ.db", "org.sqlite.JDBC")
     transaction(relationQQ) {
@@ -21,7 +24,7 @@ fun main() {
     TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
     application {
         Window(
-            onCloseRequest = ::exitApplication, title = "Chat-Dragon"
+                onCloseRequest = ::exitApplication, title = "Chat-Dragon"
         ) {
             app()
         }

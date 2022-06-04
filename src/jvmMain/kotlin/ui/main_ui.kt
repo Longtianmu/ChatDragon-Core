@@ -7,22 +7,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import chatHistoryQQ
@@ -33,7 +31,6 @@ import datas.MessagesQQ
 import datas.RenderMessages
 import datas.calculateRelationIDQQ
 import groupListQQ
-import history
 import io.appoutlet.karavel.Page
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,27 +43,26 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import userQQBot
-import kotlin.math.sign
 
 //左侧边栏
 @Composable
 fun leftSidebar() {
     Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .width(60.dp)
-            .background(Color(247, 242, 243))
-            .padding(10.dp)
+            modifier = Modifier
+                    .fillMaxHeight()
+                    .width(60.dp)
+                    .background(Color(247, 242, 243))
+                    .padding(10.dp)
     ) {
         IconButton(
-            onClick = {
-                nav.navigate(MainPage())
-            }
+                onClick = {
+                    nav.navigate(MainPage())
+                }
         ) {
             Image(
-                imageVector = Icons.Default.Email,
-                contentDescription = "Chats",
-                modifier = Modifier.size(32.dp)
+                    imageVector = Icons.Default.Email,
+                    contentDescription = "Chats",
+                    modifier = Modifier.size(32.dp)
             )
         }
         /*Image(
@@ -74,18 +70,18 @@ fun leftSidebar() {
             painter = painterResource("")
         )*/
         Column(
-            modifier = Modifier.weight(10F),
-            verticalArrangement = Arrangement.Bottom
+                modifier = Modifier.weight(10F),
+                verticalArrangement = Arrangement.Bottom
         ) {
             IconButton(
-                onClick = {
-                    nav.navigate(SettingsPage())
-                }
+                    onClick = {
+                        nav.navigate(SettingsPage())
+                    }
             ) {
                 Image(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Settings",
-                    modifier = Modifier.size(32.dp)
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "Settings",
+                        modifier = Modifier.size(32.dp)
                 )
             }
         }
@@ -99,13 +95,13 @@ fun sessionList() {
     val selected = remember { mutableStateOf(Pair("None", "")) }
     Row(modifier = Modifier.fillMaxSize()) {
         Box(
-            modifier = Modifier.fillMaxHeight().width(250.dp).background(color = Color(180, 180, 180)).padding(10.dp)
+                modifier = Modifier.fillMaxHeight().width(250.dp).background(color = Color(180, 180, 180)).padding(10.dp)
         ) {
             val state = rememberLazyListState()
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier.fillMaxSize().padding(end = 12.dp),
-                state = state
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxSize().padding(end = 12.dp),
+                    state = state
             ) {
                 stickyHeader {
                     Box {
@@ -114,15 +110,15 @@ fun sessionList() {
                 }
                 items(groupListQQ) {
                     Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
-                        .clickable {
-                            selected.value = Pair("QQ_Group", it.id.toString())
-                        }) {
+                            .clickable {
+                                selected.value = Pair("QQ_Group", it.id.toString())
+                            }) {
                         Row {
                             AsyncImage(
-                                load = { loadImageBitmap(it.avatarUrl) },
-                                painterFor = { remember { BitmapPainter(it) } },
-                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
-                                contentDescription = "Group Avatar"
+                                    load = { loadImageBitmap(it.avatarUrl) },
+                                    painterFor = { remember { BitmapPainter(it) } },
+                                    modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                                    contentDescription = "Group Avatar"
                             )
                             Box(modifier = Modifier.padding(4.dp).fillMaxSize()) {
                                 Text(text = it.name)
@@ -132,15 +128,15 @@ fun sessionList() {
                 }
                 items(contactListQQ) {
                     Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
-                        .clickable {
-                            selected.value = Pair("QQ_Friend", it.id.toString())
-                        }) {
+                            .clickable {
+                                selected.value = Pair("QQ_Friend", it.id.toString())
+                            }) {
                         Row {
                             AsyncImage(
-                                load = { loadImageBitmap(it.avatarUrl) },
-                                painterFor = { remember { BitmapPainter(it) } },
-                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
-                                contentDescription = "Friend Avatar"
+                                    load = { loadImageBitmap(it.avatarUrl) },
+                                    painterFor = { remember { BitmapPainter(it) } },
+                                    modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                                    contentDescription = "Friend Avatar"
                             )
                             Box(modifier = Modifier.padding(4.dp).fillMaxSize()) {
                                 Text(text = it.nameCardOrNick)
@@ -150,9 +146,9 @@ fun sessionList() {
                 }
             }
             VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(), adapter = rememberScrollbarAdapter(
+                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(), adapter = rememberScrollbarAdapter(
                     scrollState = state
-                )
+            )
             )
         }
         if (selected.value.first != "None") {
@@ -165,11 +161,11 @@ fun sessionList() {
 @Composable
 fun chatUI(type: String, id: String) {
     val contact = contactsMap[type]!![id]!!
-    history.clear()
+    val history = mutableStateListOf<RenderMessages>()
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             contactBar(contact)
-            chatBar(contact, type)
+            chatBar(contact, type, history)
         }
     }
 }
@@ -181,10 +177,10 @@ fun contactBar(contact: Contacts) {
             Box {
                 Row {
                     AsyncImage(
-                        load = { loadImageBitmap(contact.avatar) },
-                        painterFor = { remember { BitmapPainter(it) } },
-                        modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
-                        contentDescription = "Contacts Avatar"
+                            load = { loadImageBitmap(contact.avatar) },
+                            painterFor = { remember { BitmapPainter(it) } },
+                            modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                            contentDescription = "Contacts Avatar"
                     )
                     Text(contact.name, modifier = Modifier.padding(10.dp))
                 }
@@ -198,47 +194,47 @@ fun contactBar(contact: Contacts) {
 
 
 @Composable
-fun chatBar(contact: Contacts, type: String) {
+fun chatBar(contact: Contacts, type: String, history: SnapshotStateList<RenderMessages>) {
     val id = when (type) {
         "QQ_Friend" -> "QID"
         "QQ_Group" -> "GID"
         else -> ""
     }
-    val relation = calculateRelationIDQQ(userQQBot.userBot.id, contact.id+id)
+    val relation = calculateRelationIDQQ(userQQBot.userBot.id, contact.id + id)
     CoroutineScope(Dispatchers.IO).launch {
         transaction(chatHistoryQQ) {
             MessagesQQ
-                .select { (MessagesQQ.relationID eq relation) and (MessagesQQ.contactID eq contact.id+id) }
-                .orderBy(MessagesQQ.timeStamp to SortOrder.DESC)
-                .limit(50, 1).forEach {
-                    history.add(
-                        RenderMessages(
-                            it[MessagesQQ.msgID],
-                            it[MessagesQQ.relationID],
-                            it[MessagesQQ.contactID],
-                            it[MessagesQQ.timeStamp],
-                            it[MessagesQQ.messageContent]
+                    .select { (MessagesQQ.relationID eq relation) and (MessagesQQ.contactID eq contact.id + id) }
+                    .orderBy(MessagesQQ.timeStamp to SortOrder.DESC)
+                    .limit(50, 0).forEach {
+                        history.add(
+                                RenderMessages(
+                                        it[MessagesQQ.msgID],
+                                        it[MessagesQQ.relationID],
+                                        it[MessagesQQ.contactID],
+                                        it[MessagesQQ.timeStamp],
+                                        it[MessagesQQ.messageContent]
+                                )
                         )
-                    )
-                }
+                    }
         }
         history.sortBy { it.timeStamp }
-        simpleMessageListenerForChatUI(contact)
+        simpleMessageListenerForChatUI(contact, history)
     }
     println(history.toString())
     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.65f)) {
         val state = rememberLazyListState()
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxSize(), state = state
+                verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxSize(), state = state
         ) {
             items(history) {
                 buildMessageCard(it)
             }
         }
         VerticalScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(), adapter = rememberScrollbarAdapter(
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(), adapter = rememberScrollbarAdapter(
                 scrollState = state
-            )
+        )
         )
     }
 }
@@ -248,7 +244,7 @@ class MainPage : Page() {
     @Composable
     override fun content() {
         Card(
-            modifier = Modifier.fillMaxSize(), backgroundColor = Color(255, 255, 255), elevation = 0.dp
+                modifier = Modifier.fillMaxSize(), backgroundColor = Color(255, 255, 255), elevation = 0.dp
         ) {
             Scaffold {
                 Row(modifier = Modifier.fillMaxSize()) {
@@ -261,41 +257,42 @@ class MainPage : Page() {
 }
 
 class SettingsPage : Page() {
+    @OptIn(ExperimentalMaterialApi::class)
     @Composable
     override fun content() {
         val qqid = remember { mutableStateOf("") }
         val password = remember { mutableStateOf("") }
+        val result = remember { mutableStateOf("") }
         Card(
-            modifier = Modifier.fillMaxSize(), backgroundColor = Color(255, 255, 255), elevation = 0.dp
+                modifier = Modifier.fillMaxSize(), backgroundColor = Color(255, 255, 255), elevation = 0.dp
         ) {
             Scaffold {
                 Row(modifier = Modifier.fillMaxSize()) {
                     leftSidebar()
                     Box(modifier = Modifier.fillMaxSize()) {
                         Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             OutlinedTextField(
-                                value = qqid.value,
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                onValueChange = { qqid.value = it },
-                                placeholder = { Text("QQ号") },
-                                singleLine = true,
-                                modifier = Modifier.padding(12.dp)
+                                    value = qqid.value,
+                                    onValueChange = { qqid.value = it },
+                                    placeholder = { Text("QQ号") },
+                                    singleLine = true,
+                                    modifier = Modifier.padding(12.dp)
                             )
                             OutlinedTextField(
-                                value = password.value,
-                                onValueChange = { password.value = it },
-                                visualTransformation = PasswordVisualTransformation(),
-                                placeholder = { Text("密码") },
-                                singleLine = true,
-                                modifier = Modifier.padding(12.dp)
+                                    value = password.value,
+                                    onValueChange = { password.value = it },
+                                    visualTransformation = PasswordVisualTransformation(),
+                                    placeholder = { Text("密码") },
+                                    singleLine = true,
+                                    modifier = Modifier.padding(12.dp)
                             )
                             Button(onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    initQQ(qqid.value, password.value)
+                                    result.value = initQQ(qqid.value, password.value)
                                 }
                             }) {
                                 Text("登录QQ")
@@ -303,6 +300,29 @@ class SettingsPage : Page() {
                         }
                     }
                 }
+            }
+            if (result.value != "") {
+                AlertDialog(
+                        onDismissRequest = {
+                            result.value = ""
+                        },
+                        title = {
+                            Text(text = "QQ登录提示框")
+                        },
+                        text = {
+                            Text(result.value)
+                        },
+                        confirmButton = {
+                            Button(
+                                    onClick = {
+                                        result.value = ""
+                                        nav.navigate(SettingsPage())
+                                    }) {
+                                Text("关闭窗口")
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize(0.45f)
+                )
             }
         }
     }

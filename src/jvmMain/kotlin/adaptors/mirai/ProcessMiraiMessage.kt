@@ -2,7 +2,6 @@ package adaptors.mirai
 
 import datas.Content
 import datas.Messages
-import ui.downloadPicture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -10,10 +9,11 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
+import ui.downloadPicture
 
 
 suspend fun convertMiraiMessageToJson(
-    sender: String, senderName: String, senderAvatar: String, message: MessageChain
+        sender: String, senderName: String, senderAvatar: String, message: MessageChain
 ): String {
     val content: MutableList<Content> = mutableListOf()
     withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {

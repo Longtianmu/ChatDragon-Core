@@ -1,13 +1,13 @@
 package message
 
 import adaptors.mirai.convertMiraiMessageToJson
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import chatHistoryQQ
 import contact.Contacts
 import datas.MessagesQQ
 import datas.RenderMessages
 import datas.calculateMsgIDQQ
 import datas.calculateRelationIDQQ
-import history
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -33,10 +33,10 @@ fun messageListener(contacts: Contacts) {
                         var result: String
                         withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                             result = convertMiraiMessageToJson(
-                                it.sender.id.toString(),
-                                it.sender.nameCardOrNick,
-                                it.sender.avatarUrl,
-                                it.message
+                                    it.sender.id.toString(),
+                                    it.sender.nameCardOrNick,
+                                    it.sender.avatarUrl,
+                                    it.message
                             )
                         }
                         MessagesQQ.insert { msg ->
@@ -61,10 +61,10 @@ fun messageListener(contacts: Contacts) {
                         var result: String
                         withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                             result = convertMiraiMessageToJson(
-                                it.sender.id.toString(),
-                                it.sender.nameCardOrNick,
-                                it.sender.avatarUrl,
-                                it.message
+                                    it.sender.id.toString(),
+                                    it.sender.nameCardOrNick,
+                                    it.sender.avatarUrl,
+                                    it.message
                             )
                         }
                         MessagesQQ.insert { msg ->
@@ -82,7 +82,7 @@ fun messageListener(contacts: Contacts) {
     }
 }
 
-fun simpleMessageListenerForChatUI(contacts: Contacts) {
+fun simpleMessageListenerForChatUI(contacts: Contacts, history: SnapshotStateList<RenderMessages>) {
     val currentID = userQQBot.userBot.id
     when (contacts.type) {
         "QQ_Friend" -> {
@@ -93,10 +93,10 @@ fun simpleMessageListenerForChatUI(contacts: Contacts) {
                     var result: String
                     withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                         result = convertMiraiMessageToJson(
-                            it.sender.id.toString(),
-                            it.sender.nameCardOrNick,
-                            it.sender.avatarUrl,
-                            it.message
+                                it.sender.id.toString(),
+                                it.sender.nameCardOrNick,
+                                it.sender.avatarUrl,
+                                it.message
                         )
                     }
                     history.add(RenderMessages("", "", "", it.time.toLong(), result))
@@ -111,10 +111,10 @@ fun simpleMessageListenerForChatUI(contacts: Contacts) {
                     var result: String
                     withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                         result = convertMiraiMessageToJson(
-                            it.sender.id.toString(),
-                            it.sender.nameCardOrNick,
-                            it.sender.avatarUrl,
-                            it.message
+                                it.sender.id.toString(),
+                                it.sender.nameCardOrNick,
+                                it.sender.avatarUrl,
+                                it.message
                         )
                     }
                     history.add(RenderMessages("", "", "", it.time.toLong(), result))

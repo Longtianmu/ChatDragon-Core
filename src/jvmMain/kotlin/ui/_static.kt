@@ -2,6 +2,7 @@ package ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -16,8 +17,7 @@ import datas.Messages
 import datas.RenderMessages
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import java.time.Instant
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
 
 @Composable
 fun buildMessageCard(message: RenderMessages) {
@@ -27,25 +27,20 @@ fun buildMessageCard(message: RenderMessages) {
     val senderName = rawMessage.senderName
     val senderAvatar = rawMessage.senderAvatar
     val messageList = rawMessage.content
-    Card() {
+    var template = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+    Card(modifier = Modifier.fillMaxWidth()) {
         Row() {
             Card() {
                 AsyncImage(
-                    load = { loadImageBitmap(senderAvatar) },
-                    painterFor = { remember { BitmapPainter(it) } },
-                    modifier = Modifier.size(48.dp).clip(RoundedCornerShape(5.dp)),
-                    contentDescription = "Sender Avatar"
+                        load = { loadImageBitmap(senderAvatar) },
+                        painterFor = { remember { BitmapPainter(it) } },
+                        modifier = Modifier.size(48.dp).clip(RoundedCornerShape(5.dp)),
+                        contentDescription = "Sender Avatar"
                 )
             }
-            Card() {
+            Card(modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    Text(
-                        "$senderName    " + DateTimeFormatter.ISO_INSTANT.format(
-                            Instant.ofEpochSecond(
-                                timeStamp
-                            )
-                        )
-                    )
+                    Text("$senderName   ")
                     for (i in messageList) {
                         when (i.type) {
                             "Text" -> {
@@ -53,10 +48,10 @@ fun buildMessageCard(message: RenderMessages) {
                             }
                             "Image" -> {
                                 AsyncImage(
-                                    load = { loadImageBitmap(i.content) },
-                                    painterFor = { remember { BitmapPainter(it) } },
-                                    modifier = Modifier.size(48.dp).clip(RoundedCornerShape(5.dp)),
-                                    contentDescription = "Sender Avatar"
+                                        load = { loadImageBitmap(i.content) },
+                                        painterFor = { remember { BitmapPainter(it) } },
+                                        modifier = Modifier.clip(RoundedCornerShape(5.dp)),
+                                        contentDescription = "Message Images"
                                 )
                             }
                             else -> Text("WIP")
