@@ -1,3 +1,5 @@
+package ui
+
 import adaptors.mirai.initQQ
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -7,8 +9,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -17,54 +21,74 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import chatHistoryQQ
 import contact.Contacts
+import contactListQQ
+import contactsMap
 import datas.MessagesQQ
 import datas.RenderMessages
 import datas.calculateRelationIDQQ
-import io.appoutlet.karavel.Karavel
+import groupListQQ
+import history
 import io.appoutlet.karavel.Page
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import message.simpleMessageListenerForChatUI
-import net.mamoe.mirai.contact.Friend
-import net.mamoe.mirai.contact.Group
+import nav
 import net.mamoe.mirai.contact.nameCardOrNick
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-
-val nav = Karavel(MainPage())
-val groupListQQ = mutableStateListOf<Group>()
-val contactListQQ = mutableStateListOf<Friend>()
-val history = mutableStateListOf<RenderMessages>()
-val contactsMap = mutableMapOf<String, MutableMap<String, Contacts>>()
+import userQQBot
+import kotlin.math.sign
 
 //左侧边栏
 @Composable
 fun leftSidebar() {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxHeight().width(66.dp).background(Color(247, 242, 243))
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(60.dp)
+            .background(Color(247, 242, 243))
+            .padding(10.dp)
     ) {
-        Image(contentDescription = "Chat Lists",
-            painter = painterResource("icons/112-bubbles3.svg"),
-            modifier = Modifier.padding(vertical = 20.dp).size(42.dp).clickable {
+        IconButton(
+            onClick = {
                 nav.navigate(MainPage())
-            })
+            }
+        ) {
+            Image(
+                imageVector = Icons.Default.Email,
+                contentDescription = "Chats",
+                modifier = Modifier.size(32.dp)
+            )
+        }
         /*Image(
             contentDescription = "Contact Lists",
             painter = painterResource("")
         )*/
-        Image(contentDescription = "Settings",
-            painter = painterResource("icons/147-equalizer.svg"),
-            modifier = Modifier.padding(top = 400.dp).size(42.dp).clickable {
-                nav.navigate(SettingsPage())
-            })
+        Column(
+            modifier = Modifier.weight(10F),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            IconButton(
+                onClick = {
+                    nav.navigate(SettingsPage())
+                }
+            ) {
+                Image(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Settings",
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }
     }
 }
 
@@ -154,8 +178,8 @@ fun chatUI(type: String, id: String) {
 fun contactBar(contact: Contacts) {
     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)) {
         Row {
-            Box() {
-                Row() {
+            Box {
+                Row {
                     AsyncImage(
                         load = { loadImageBitmap(contact.avatar) },
                         painterFor = { remember { BitmapPainter(it) } },
@@ -248,23 +272,27 @@ class SettingsPage : Page() {
                 Row(modifier = Modifier.fillMaxSize()) {
                     leftSidebar()
                     Box(modifier = Modifier.fillMaxSize()) {
-                        Row(modifier = Modifier.fillMaxSize()) {
-                            Column {
-                                TextField(
-                                    value = qqid.value,
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    onValueChange = { qqid.value = it },
-                                    placeholder = { Text("QQ号") },
-                                    modifier = Modifier.padding(12.dp)
-                                )
-                                TextField(
-                                    value = password.value,
-                                    onValueChange = { password.value = it },
-                                    visualTransformation = PasswordVisualTransformation(),
-                                    placeholder = { Text("密码") },
-                                    modifier = Modifier.padding(12.dp)
-                                )
-                            }
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            OutlinedTextField(
+                                value = qqid.value,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                onValueChange = { qqid.value = it },
+                                placeholder = { Text("QQ号") },
+                                singleLine = true,
+                                modifier = Modifier.padding(12.dp)
+                            )
+                            OutlinedTextField(
+                                value = password.value,
+                                onValueChange = { password.value = it },
+                                visualTransformation = PasswordVisualTransformation(),
+                                placeholder = { Text("密码") },
+                                singleLine = true,
+                                modifier = Modifier.padding(12.dp)
+                            )
                             Button(onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     initQQ(qqid.value, password.value)
@@ -281,7 +309,7 @@ class SettingsPage : Page() {
 }
 
 @Composable
-fun App() {
+fun app() {
     MaterialTheme {
         nav.currentPage().content()
     }

@@ -1,3 +1,5 @@
+package ui
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -14,6 +16,8 @@ import datas.Messages
 import datas.RenderMessages
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun buildMessageCard(message: RenderMessages) {
@@ -36,14 +40,14 @@ fun buildMessageCard(message: RenderMessages) {
             Card() {
                 Column {
                     Text(
-                        "$senderName    " + java.time.format.DateTimeFormatter.ISO_INSTANT.format(
-                            java.time.Instant.ofEpochSecond(
+                        "$senderName    " + DateTimeFormatter.ISO_INSTANT.format(
+                            Instant.ofEpochSecond(
                                 timeStamp
                             )
                         )
                     )
-                    for(i in messageList){
-                        when(i.type){
+                    for (i in messageList) {
+                        when (i.type) {
                             "Text" -> {
                                 Text(i.content)
                             }
