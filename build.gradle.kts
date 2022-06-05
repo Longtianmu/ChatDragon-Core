@@ -23,7 +23,7 @@ val exposedVersion: String = "0.38.1"
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
         withJava()
     }
