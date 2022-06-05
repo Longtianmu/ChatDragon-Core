@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import ui.App
 import java.sql.Connection
 
-fun main() {
+fun main() = application {
     if (!dbPath.exists()) {
         dbPath.mkdirs()
     }
@@ -22,11 +22,10 @@ fun main() {
         SchemaUtils.createMissingTablesAndColumns(MessagesQQ)
     }
     TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
-    application {
-        Window(
-                onCloseRequest = ::exitApplication, title = "Chat-Dragon"
-        ) {
-            App()
-        }
+    Window(
+        onCloseRequest = ::exitApplication, title = "Chat-Dragon"
+    ) {
+        App()
     }
 }
+

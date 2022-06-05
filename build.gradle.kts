@@ -23,7 +23,7 @@ val exposedVersion: String = "0.38.1"
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "17"
+            kotlinOptions.jvmTarget = "11"
         }
         withJava()
     }
@@ -48,7 +48,7 @@ compose.desktop {
     application {
         mainClass = "MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb,TargetFormat.Exe)
             packageName = "Chat-Dragon"
             packageVersion = "1.0.0"
         }
