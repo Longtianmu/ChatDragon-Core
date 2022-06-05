@@ -1,12 +1,16 @@
+@file:JvmName("MainKt")
+
+package net.ltm
+
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import datas.MessagesQQ
-import datas.RelationQQ
+import net.ltm.datas.MessagesQQ
+import net.ltm.datas.RelationQQ
+import net.ltm.ui.App
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
-import ui.App
 import java.sql.Connection
 
 fun main() = application {

@@ -1,6 +1,5 @@
-package ui
+package net.ltm.ui
 
-import adaptors.mirai.initQQ
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -15,7 +14,8 @@ import io.appoutlet.karavel.Page
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import nav
+import net.ltm.adaptors.mirai.initQQ
+import net.ltm.nav
 
 class SettingsPage : Page() {
     @OptIn(ExperimentalMaterialApi::class)

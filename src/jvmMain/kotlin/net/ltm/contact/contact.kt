@@ -1,6 +1,6 @@
-package contact
+package net.ltm.contact
 
-import message.messageListener
+import net.ltm.message.messageListener
 
 class Contacts() {
     var id: String = ""

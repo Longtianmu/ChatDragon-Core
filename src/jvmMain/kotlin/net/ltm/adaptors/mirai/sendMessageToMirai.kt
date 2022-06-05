@@ -1,20 +1,17 @@
-package adaptors.mirai
+package net.ltm.adaptors.mirai
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import contact.Contacts
-import datas.RenderMessages
-import datas.calculateRelationIDQQ
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.message.data.MessageChain
-import net.mamoe.mirai.message.data.time
+import net.ltm.contact.Contacts
+import net.ltm.datas.RenderMessages
+import net.ltm.datas.calculateRelationIDQQ
+import net.ltm.userQQBot
 import net.mamoe.mirai.message.sourceMessage
 import net.mamoe.mirai.message.sourceTime
-import userQQBot
 
-suspend fun sendMessageToMirai(contact:Contacts, content:String,history:SnapshotStateList<RenderMessages>){
+suspend fun sendMessageToMirai(contact: Contacts, content:String, history:SnapshotStateList<RenderMessages>){
     val currentID = userQQBot.userBot.id
     val nowUser =userQQBot.userBot
     when(contact.type){

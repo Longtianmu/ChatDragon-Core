@@ -1,12 +1,11 @@
-package adaptors.mirai
+package net.ltm.adaptors.mirai
 
-import contact.Contacts
-import contactListQQ
-import contactsMap
-import datas.RelationQQ
-import datas.calculateRelationIDQQ
-import groupListQQ
+
 import kotlinx.coroutines.Dispatchers
+import net.ltm.*
+import net.ltm.contact.Contacts
+import net.ltm.datas.RelationQQ
+import net.ltm.datas.calculateRelationIDQQ
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.utils.BotConfiguration
@@ -14,8 +13,6 @@ import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
-import relationQQ
-import userQQBot
 import java.io.File
 
 class BotSets(qq: Long, password: String) {

@@ -1,15 +1,15 @@
-package adaptors.mirai
+package net.ltm.adaptors.mirai
 
-import datas.Content
-import datas.Messages
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import net.ltm.datas.Content
+import net.ltm.datas.Messages
+import net.ltm.ui.downloadPicture
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
-import ui.downloadPicture
 
 
 suspend fun convertMiraiMessageToJson(

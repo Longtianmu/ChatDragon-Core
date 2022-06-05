@@ -1,4 +1,4 @@
-package ui
+package net.ltm.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
@@ -13,11 +13,11 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.Density
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.ltm.userQQBot
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.xml.sax.InputSource
-import userQQBot
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

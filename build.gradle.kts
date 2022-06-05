@@ -48,9 +48,11 @@ compose.desktop {
     application {
         mainClass = "MainKt"
         nativeDistributions {
+            includeAllModules = true
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb,TargetFormat.Exe)
             packageName = "Chat-Dragon"
             packageVersion = "1.0.0"
+            vendor = "Longtianmu"
         }
     }
 }

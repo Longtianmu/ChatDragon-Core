@@ -1,4 +1,4 @@
-package ui
+package net.ltm.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,10 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
-import datas.Messages
-import datas.RenderMessages
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import net.ltm.datas.Messages
+import net.ltm.datas.RenderMessages
 import java.text.SimpleDateFormat
 
 @Composable

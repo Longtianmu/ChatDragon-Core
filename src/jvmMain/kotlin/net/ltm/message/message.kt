@@ -1,16 +1,17 @@
-package message
+package net.ltm.message
 
-import adaptors.mirai.convertMiraiMessageToJson
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import chatHistoryQQ
-import contact.Contacts
-import datas.MessagesQQ
-import datas.RenderMessages
-import datas.calculateMsgIDQQ
-import datas.calculateRelationIDQQ
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.ltm.adaptors.mirai.convertMiraiMessageToJson
+import net.ltm.chatHistoryQQ
+import net.ltm.contact.Contacts
+import net.ltm.datas.MessagesQQ
+import net.ltm.datas.RenderMessages
+import net.ltm.datas.calculateMsgIDQQ
+import net.ltm.datas.calculateRelationIDQQ
+import net.ltm.userQQBot
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
@@ -18,7 +19,6 @@ import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import userQQBot
 
 fun messageListener(contacts: Contacts) {
     val currentID = userQQBot.userBot.id

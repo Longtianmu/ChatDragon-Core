@@ -1,11 +1,13 @@
-import adaptors.mirai.BotSets
+package net.ltm
+
 import androidx.compose.runtime.mutableStateListOf
-import contact.Contacts
 import io.appoutlet.karavel.Karavel
+import net.ltm.adaptors.mirai.BotSets
+import net.ltm.contact.Contacts
+import net.ltm.ui.MainPage
 import net.mamoe.mirai.contact.Friend
 import net.mamoe.mirai.contact.Group
 import org.jetbrains.exposed.sql.Database
-import ui.MainPage
 import java.io.File
 
 val nav = Karavel(MainPage())

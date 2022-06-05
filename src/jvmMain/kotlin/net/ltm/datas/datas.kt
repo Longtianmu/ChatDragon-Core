@@ -1,4 +1,4 @@
-package datas
+package net.ltm.datas
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table

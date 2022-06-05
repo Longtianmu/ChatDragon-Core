@@ -1,4 +1,4 @@
-package ui
+package net.ltm.ui
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -19,27 +19,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
-import chatHistoryQQ
-import contact.Contacts
-import contactListQQ
-import contactsMap
-import datas.MessagesQQ
-import datas.RenderMessages
-import datas.calculateRelationIDQQ
-import groupListQQ
+import net.ltm.chatHistoryQQ
+import net.ltm.contactListQQ
+import net.ltm.contactsMap
+import net.ltm.groupListQQ
 import io.appoutlet.karavel.Page
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import message.sendMessage
-import message.simpleMessageListenerForChatUI
-import nav
+import net.ltm.nav
+import net.ltm.contact.Contacts
+import net.ltm.datas.MessagesQQ
+import net.ltm.datas.RenderMessages
+import net.ltm.datas.calculateRelationIDQQ
+import net.ltm.message.sendMessage
+import net.ltm.message.simpleMessageListenerForChatUI
 import net.mamoe.mirai.contact.nameCardOrNick
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import userQQBot
+import net.ltm.userQQBot
 
 //左侧边栏
 @Composable
@@ -238,7 +238,7 @@ fun ChatBar(contact: Contacts, type: String, history: SnapshotStateList<RenderMe
 }
 
 @Composable
-fun TypeBar(contact: Contacts, content: MutableState<String>,history: SnapshotStateList<RenderMessages>) {
+fun TypeBar(contact: Contacts, content: MutableState<String>, history: SnapshotStateList<RenderMessages>) {
     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.20f)) {
         Column(modifier = Modifier.fillMaxSize()) {
             Row(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
