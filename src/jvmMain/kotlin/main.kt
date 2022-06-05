@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
-import ui.app
+import ui.App
 import java.sql.Connection
 
 fun main() {
@@ -26,7 +26,7 @@ fun main() {
         Window(
                 onCloseRequest = ::exitApplication, title = "Chat-Dragon"
         ) {
-            app()
+            App()
         }
     }
 }

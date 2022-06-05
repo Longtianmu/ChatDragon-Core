@@ -1,6 +1,5 @@
 package ui
 
-import adaptors.mirai.initQQ
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import chatHistoryQQ
 import contact.Contacts
@@ -46,7 +44,7 @@ import userQQBot
 
 //左侧边栏
 @Composable
-fun leftSidebar() {
+fun LeftSidebar() {
     Column(
             modifier = Modifier
                     .fillMaxHeight()
@@ -91,7 +89,7 @@ fun leftSidebar() {
 //联系人列表
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun sessionList() {
+fun SessionList() {
     val selected = remember { mutableStateOf(Pair("None", "")) }
     Row(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -152,26 +150,26 @@ fun sessionList() {
             )
         }
         if (selected.value.first != "None") {
-            chatUI(selected.value.first, selected.value.second)
+            ChatUI(selected.value.first, selected.value.second)
         }
     }
 }
 
 //聊天界面
 @Composable
-fun chatUI(type: String, id: String) {
+fun ChatUI(type: String, id: String) {
     val contact = contactsMap[type]!![id]!!
     val history = mutableStateListOf<RenderMessages>()
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            contactBar(contact)
-            chatBar(contact, type, history)
+            ContactBar(contact)
+            ChatBar(contact, type, history)
         }
     }
 }
 
 @Composable
-fun contactBar(contact: Contacts) {
+fun ContactBar(contact: Contacts) {
     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)) {
         Row {
             Box {
@@ -194,7 +192,7 @@ fun contactBar(contact: Contacts) {
 
 
 @Composable
-fun chatBar(contact: Contacts, type: String, history: SnapshotStateList<RenderMessages>) {
+fun ChatBar(contact: Contacts, type: String, history: SnapshotStateList<RenderMessages>) {
     val id = when (type) {
         "QQ_Friend" -> "QID"
         "QQ_Group" -> "GID"
@@ -248,88 +246,16 @@ class MainPage : Page() {
         ) {
             Scaffold {
                 Row(modifier = Modifier.fillMaxSize()) {
-                    leftSidebar()
-                    sessionList()
+                    LeftSidebar()
+                    SessionList()
                 }
-            }
-        }
-    }
-}
-
-class SettingsPage : Page() {
-    @OptIn(ExperimentalMaterialApi::class)
-    @Composable
-    override fun content() {
-        val qqid = remember { mutableStateOf("") }
-        val password = remember { mutableStateOf("") }
-        val result = remember { mutableStateOf("") }
-        Card(
-                modifier = Modifier.fillMaxSize(), backgroundColor = Color(255, 255, 255), elevation = 0.dp
-        ) {
-            Scaffold {
-                Row(modifier = Modifier.fillMaxSize()) {
-                    leftSidebar()
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            OutlinedTextField(
-                                    value = qqid.value,
-                                    onValueChange = { qqid.value = it },
-                                    placeholder = { Text("QQ号") },
-                                    singleLine = true,
-                                    modifier = Modifier.padding(12.dp)
-                            )
-                            OutlinedTextField(
-                                    value = password.value,
-                                    onValueChange = { password.value = it },
-                                    visualTransformation = PasswordVisualTransformation(),
-                                    placeholder = { Text("密码") },
-                                    singleLine = true,
-                                    modifier = Modifier.padding(12.dp)
-                            )
-                            Button(onClick = {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    result.value = initQQ(qqid.value, password.value)
-                                }
-                            }) {
-                                Text("登录QQ")
-                            }
-                        }
-                    }
-                }
-            }
-            if (result.value != "") {
-                AlertDialog(
-                        onDismissRequest = {
-                            result.value = ""
-                        },
-                        title = {
-                            Text(text = "QQ登录提示框")
-                        },
-                        text = {
-                            Text(result.value)
-                        },
-                        confirmButton = {
-                            Button(
-                                    onClick = {
-                                        result.value = ""
-                                        nav.navigate(SettingsPage())
-                                    }) {
-                                Text("关闭窗口")
-                            }
-                        },
-                        modifier = Modifier.fillMaxSize(0.45f)
-                )
             }
         }
     }
 }
 
 @Composable
-fun app() {
+fun App() {
     MaterialTheme {
         nav.currentPage().content()
     }
