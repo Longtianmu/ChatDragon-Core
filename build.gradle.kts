@@ -18,12 +18,13 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val exposedVersion: String = "0.38.1"
+val exposedVersion: String = "0.38.2"
 
 kotlin {
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
+            kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
         }
         withJava()
     }
@@ -40,16 +41,15 @@ kotlin {
                 api("net.mamoe:mirai-logging-log4j2:2.11.1")
             }
         }
-        val jvmTest by getting
     }
 }
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "net.ltm.MainKt"
         nativeDistributions {
             includeAllModules = true
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb,TargetFormat.Exe)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Chat-Dragon"
             packageVersion = "1.0.0"
             vendor = "Longtianmu"
