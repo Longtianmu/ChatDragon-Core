@@ -4,6 +4,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
+    id ("com.github.johnrengelman.shadow") version "7.1.2"
     kotlin("plugin.serialization") version "1.6.10"
 }
 
@@ -23,7 +24,7 @@ val exposedVersion: String = "0.38.2"
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
             kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
         }
         withJava()
@@ -32,6 +33,8 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation ("org.apache.logging.log4j:log4j-api:2.17.2")
+                implementation ("org.apache.logging.log4j:log4j-core:2.17.2")
                 implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
                 implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
                 implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
@@ -46,13 +49,18 @@ kotlin {
 
 compose.desktop {
     application {
+        javaHome = System.getenv("JDK_17")
         mainClass = "net.ltm.MainKt"
         nativeDistributions {
-            includeAllModules = true
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            includeAllModules = true
             packageName = "Chat-Dragon"
             packageVersion = "1.0.0"
             vendor = "Longtianmu"
+            licenseFile.set(project.file("LICENSE"))
+            windows {
+                console = true
+            }
         }
     }
 }

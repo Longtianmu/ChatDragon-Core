@@ -1,6 +1,5 @@
 package net.ltm.adaptors.mirai
 
-
 import kotlinx.coroutines.Dispatchers
 import net.ltm.*
 import net.ltm.contact.Contacts
@@ -9,18 +8,16 @@ import net.ltm.datas.calculateRelationIDQQ
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.utils.BotConfiguration
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 import java.io.File
 
 class BotSets(qq: Long, password: String) {
     val userBot = BotFactory.newBot(qq, password) {
-        cacheDir = File("cache/mirai")
+        cacheDir = File("${dataDir}/cache/mirai")
         protocol = BotConfiguration.MiraiProtocol.MACOS
-        redirectBotLogToDirectory(File("logs/mirai"))
-        redirectNetworkLogToDirectory(File("logs/mirai"))
+        redirectBotLogToDirectory(File("${dataDir}/logs/mirai"))
+        redirectNetworkLogToDirectory(File("${dataDir}/logs/mirai"))
     }
 
     fun closeBot() {
@@ -54,7 +51,6 @@ suspend fun initQQ(qqid: String, password: String): String {
                 Contacts("QQ_Group", it.id.toString(), it.name, it.avatarUrl)
     }
     suspendedTransactionAsync(Dispatchers.IO, db = relationQQ) {
-        addLogger(StdOutSqlLogger)
         contactListQQ.forEach { friends ->
             RelationQQ.insert {
                 it[relationID] = calculateRelationIDQQ(userQQBot.userBot.id, friends.id.toString() + "QID")

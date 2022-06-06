@@ -15,8 +15,6 @@ import net.ltm.userQQBot
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
@@ -29,7 +27,6 @@ fun messageListener(contacts: Contacts) {
                     val relations = calculateRelationIDQQ(currentID, it.sender.id.toString() + "QID")
                     val times = it.time.toLong()
                     newSuspendedTransaction(Dispatchers.IO, chatHistoryQQ) {
-                        addLogger(StdOutSqlLogger)
                         var result: String
                         withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                             result = convertMiraiMessageToJson(
@@ -57,7 +54,6 @@ fun messageListener(contacts: Contacts) {
                     val relations = calculateRelationIDQQ(currentID, it.group.id.toString() + "GID")
                     val times = it.time.toLong()
                     newSuspendedTransaction(Dispatchers.IO, chatHistoryQQ) {
-                        addLogger(StdOutSqlLogger)
                         var result: String
                         withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                             result = convertMiraiMessageToJson(

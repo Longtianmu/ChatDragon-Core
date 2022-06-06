@@ -13,6 +13,7 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.Density
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.ltm.dataDir
 import net.ltm.userQQBot
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -85,7 +86,7 @@ fun downloadPicture(url: String) {
     val types = response.headers["Content-Type"]?.toMediaType()?.subtype
     val inputStream = response.body!!.byteStream()
     val fos: FileOutputStream
-    val file = File("./cache/qq/pictures/${userQQBot.userBot.id}/${convertUrlToValidFilePath(url)}")// :转换为~ /转换为% ?转换为+
+    val file = File("$dataDir/cache/qq/pictures/${userQQBot.userBot.id}/${convertUrlToValidFilePath(url)}")// :转换为~ /转换为% ?转换为+
     if (!file.exists()) {
         file.mkdirs()
     }

@@ -10,8 +10,8 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication, title = "Chat-Dragon"
     ) {
-        initApp()
         App()
+        initApp()
     }
 }
 
