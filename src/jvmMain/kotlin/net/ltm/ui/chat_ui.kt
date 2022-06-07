@@ -21,8 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
+import com.lt.load_the_image.rememberImagePainter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,9 +47,8 @@ fun ContactBar(contact: Contacts) {
         Row {
             Box {
                 Row {
-                    AsyncImage(
-                        load = { loadImageBitmap(contact.avatar) },
-                        painterFor = { remember { BitmapPainter(it) } },
+                    Image(
+                        painter = rememberImagePainter(contact.avatar),
                         modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
                         contentDescription = "Contacts Avatar"
                     )
@@ -89,33 +88,33 @@ fun TypeBar(contact: Contacts) {
     val content = remember { mutableStateOf("") }
     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.18f)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Row(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                IconButton(
+                    onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            sendMessage(contact, content.value)
+                            contact.history.sortBy { it.timeStamp }
+                            content.value = ""
+                        }
+                    }
+                ) {
+                    Image(
+                        imageVector = Icons.Default.Send,
+                        contentDescription = "发送消息",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
                 OutlinedTextField(
                     value = content.value,
                     onValueChange = { content.value = it },
                     placeholder = { Text("聊天内容") },
-                    modifier = Modifier.height(226.dp).fillMaxWidth(),
+                    modifier = Modifier.fillMaxHeight(),
                     colors = TextFieldDefaults.textFieldColors(
                         cursorColor = Color.Gray,
                         backgroundColor = Color(247, 242, 243, 100),
                         unfocusedIndicatorColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                     )
-                )
-            }
-            IconButton(
-                onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        sendMessage(contact, content.value)
-                        contact.history.sortBy { it.timeStamp }
-                        content.value = ""
-                    }
-                }
-            ) {
-                Image(
-                    imageVector = Icons.Default.Send,
-                    contentDescription = "发送消息",
-                    modifier = Modifier.size(32.dp)
                 )
             }
         }

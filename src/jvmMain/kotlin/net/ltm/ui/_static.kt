@@ -1,5 +1,6 @@
 package net.ltm.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,11 +9,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
+import com.lt.load_the_image.rememberImagePainter
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.ltm.datas.Messages
@@ -33,9 +33,8 @@ fun buildMessageCard(message: RenderMessages) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Row {
             Card {
-                AsyncImage(
-                    load = { loadImageBitmap(senderAvatar) },
-                    painterFor = { remember { BitmapPainter(it) } },
+                Image(
+                    painter = rememberImagePainter(senderAvatar),
                     modifier = Modifier.size(48.dp).clip(RoundedCornerShape(5.dp)),
                     contentDescription = "Sender Avatar"
                 )
@@ -49,9 +48,8 @@ fun buildMessageCard(message: RenderMessages) {
                                 Text(i.content)
                             }
                             "Image" -> {
-                                AsyncImage(
-                                    load = { loadImageBitmap(i.content) },
-                                    painterFor = { remember { BitmapPainter(it) } },
+                                Image(
+                                    painter = rememberImagePainter(i.content),
                                     modifier = Modifier.clip(RoundedCornerShape(5.dp)),
                                     contentDescription = "Message Images"
                                 )

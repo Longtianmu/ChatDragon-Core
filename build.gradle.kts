@@ -4,7 +4,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id ("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
     kotlin("plugin.serialization") version "1.6.10"
 }
 
@@ -20,7 +20,7 @@ repositories {
 }
 
 val exposedVersion: String = "0.38.2"
-val decomposeVersion:String = "0.6.0-native-compose-01"
+val decomposeVersion: String = "0.6.0-native-compose-01"
 kotlin {
     jvm {
         compilations.all {
@@ -33,14 +33,13 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation ("org.apache.logging.log4j:log4j-api:2.17.2")
-                implementation ("org.apache.logging.log4j:log4j-core:2.17.2")
+                implementation("org.apache.logging.log4j:log4j-api:2.17.2")
+                implementation("org.apache.logging.log4j:log4j-core:2.17.2")
                 implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
                 implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
                 implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
                 implementation("org.xerial:sqlite-jdbc:3.30.1")
-                implementation("com.arkivanov.decompose:decompose:$decomposeVersion")
-                implementation("com.arkivanov.decompose:extensions-compose-jetbrains:$decomposeVersion")
+                implementation("com.github.ltttttttttttt:load-the-image:1.0.1")
                 implementation("com.github.app-outlet:karavel:1.0.0")
                 api("net.mamoe:mirai-core:2.11.1")
                 api("net.mamoe:mirai-logging-log4j2:2.11.1")

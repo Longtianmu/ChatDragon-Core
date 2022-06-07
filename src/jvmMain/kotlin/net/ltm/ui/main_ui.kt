@@ -17,14 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
+import com.lt.load_the_image.rememberImagePainter
 import io.appoutlet.karavel.Page
 import net.ltm.contactListQQ
 import net.ltm.contactsMap
 import net.ltm.groupListQQ
 import net.ltm.nav
 import net.mamoe.mirai.contact.nameCardOrNick
+import java.lang.Thread.sleep
 
 //左侧边栏
 @Composable
@@ -93,12 +94,13 @@ fun SessionList() {
                 items(groupListQQ) {
                     Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
                         .clickable {
+                            selected.value = Pair("Clear", "")
+                            sleep(10)
                             selected.value = Pair("QQ_Group", it.id.toString())
                         }) {
                         Row {
-                            AsyncImage(
-                                load = { loadImageBitmap(it.avatarUrl) },
-                                painterFor = { remember { BitmapPainter(it) } },
+                            Image(
+                                painter = rememberImagePainter(it.avatarUrl),
                                 modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
                                 contentDescription = "Group Avatar"
                             )
@@ -111,12 +113,13 @@ fun SessionList() {
                 items(contactListQQ) {
                     Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
                         .clickable {
+                            selected.value = Pair("Clear", "")
+                            sleep(10)
                             selected.value = Pair("QQ_Friend", it.id.toString())
                         }) {
                         Row {
-                            AsyncImage(
-                                load = { loadImageBitmap(it.avatarUrl) },
-                                painterFor = { remember { BitmapPainter(it) } },
+                            Image(
+                                painter = rememberImagePainter(it.avatarUrl),
                                 modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
                                 contentDescription = "Friend Avatar"
                             )
@@ -133,7 +136,11 @@ fun SessionList() {
                 )
             )
         }
-        if (selected.value.first != "None") {
+        if (selected.value.first == "Clear") {
+            Card(modifier = Modifier.fillMaxSize()) {
+                Text("", modifier = Modifier.fillMaxSize())
+            }
+        } else if (selected.value.first != "None") {
             contactsMap[selected.value.first]?.get(selected.value.second)?.let { ChatUI(it) }
         }
     }
