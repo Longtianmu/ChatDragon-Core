@@ -18,6 +18,7 @@ import kotlinx.serialization.json.Json
 import net.ltm.datas.Messages
 import net.ltm.datas.RenderMessages
 import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun buildMessageCard(message: RenderMessages) {
@@ -27,7 +28,8 @@ fun buildMessageCard(message: RenderMessages) {
     val senderName = rawMessage.senderName
     val senderAvatar = rawMessage.senderAvatar
     val messageList = rawMessage.content
-    var template = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+    val simpleDateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm")
+    val formatedTime = simpleDateFormat.format(Date(timeStamp * 1000))
     Card(modifier = Modifier.fillMaxWidth()) {
         Row {
             Card {
@@ -40,7 +42,7 @@ fun buildMessageCard(message: RenderMessages) {
             }
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    Text("$senderName   ")
+                    Text("$senderName   $formatedTime")
                     for (i in messageList) {
                         when (i.type) {
                             "Text" -> {

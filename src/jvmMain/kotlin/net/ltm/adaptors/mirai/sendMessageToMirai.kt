@@ -9,6 +9,7 @@ import net.ltm.datas.calculateMsgIDQQ
 import net.ltm.datas.calculateRelationIDQQ
 import net.ltm.message.insertMessageToDB
 import net.ltm.userQQBot
+import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.message.sourceMessage
 import net.mamoe.mirai.message.sourceTime
 
@@ -25,7 +26,7 @@ suspend fun sendMessageToMirai(contact: Contacts, content: String) {
             withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                 result = convertMiraiMessageToJson(
                     currentID.toString(),
-                    nowUser.bot.nick,
+                    nowUser.nameCardOrNick,
                     nowUser.avatarUrl,
                     res.sourceMessage
                 )
@@ -49,7 +50,7 @@ suspend fun sendMessageToMirai(contact: Contacts, content: String) {
             withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                 result = convertMiraiMessageToJson(
                     currentID.toString(),
-                    nowUser.bot.nick,
+                    nowUser.nameCardOrNick,
                     nowUser.avatarUrl,
                     res.sourceMessage
                 )

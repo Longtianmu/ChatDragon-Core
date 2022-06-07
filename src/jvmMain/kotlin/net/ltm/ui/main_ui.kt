@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
 import io.appoutlet.karavel.Page
 import net.ltm.contactListQQ
+import net.ltm.contactsMap
 import net.ltm.groupListQQ
 import net.ltm.nav
 import net.mamoe.mirai.contact.nameCardOrNick
@@ -133,7 +134,7 @@ fun SessionList() {
             )
         }
         if (selected.value.first != "None") {
-            ChatUI(selected.value.first, selected.value.second)
+            contactsMap[selected.value.first]?.get(selected.value.second)?.let { ChatUI(it) }
         }
     }
 }
