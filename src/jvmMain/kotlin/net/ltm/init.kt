@@ -11,20 +11,20 @@ import java.sql.Connection
 import java.util.*
 import kotlin.system.exitProcess
 
-fun initApp(){
+fun initApp() {
     val os = System.getProperty("os.name").lowercase(Locale.getDefault())
-    dataDir = if(os.startsWith("windows")){
+    dataDir = if (os.startsWith("windows")) {
         "${System.getenv("AppData")}\\Chat-Dragon"
-    }else if(os.startsWith("linux")){
+    } else if (os.startsWith("linux")) {
         "${System.getenv("username")}/.local/share/Chat-Dragon"
-    }else{
+    } else {
         exitProcess(-1)
     }
     dbPath = "$dataDir/data"
-    if(!File(dbPath).exists()){
+    if (!File(dbPath).exists()) {
         File(dbPath).mkdirs()
     }
-    try{
+    try {
         relationQQ = Database.connect("jdbc:sqlite:$dbPath/relationQQ.db", "org.sqlite.JDBC")
         chatHistoryQQ = Database.connect("jdbc:sqlite:$dbPath/chatHistoryQQ.db", "org.sqlite.JDBC")
         transaction(relationQQ) {
@@ -34,7 +34,7 @@ fun initApp(){
             SchemaUtils.createMissingTablesAndColumns(MessagesQQ)
         }
         TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
-    }catch(e:Exception){
+    } catch (e: Exception) {
         println(e)
     }
 }

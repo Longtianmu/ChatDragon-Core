@@ -54,6 +54,8 @@ class SettingsPage : Page() {
                             Button(onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     result.value = initQQ(qqid.value, password.value)
+                                    qqid.value = ""
+                                    password.value = ""
                                 }
                             }) {
                                 Text("登录QQ")

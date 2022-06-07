@@ -13,7 +13,7 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 
 
 suspend fun convertMiraiMessageToJson(
-        sender: String, senderName: String, senderAvatar: String, message: MessageChain
+    sender: String, senderName: String, senderAvatar: String, message: MessageChain
 ): String {
     val content: MutableList<Content> = mutableListOf()
     withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {

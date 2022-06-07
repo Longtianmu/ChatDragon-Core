@@ -14,24 +14,24 @@ fun calculateMsgIDQQ(relationID: String, timeStamp: Long): String {
 
 @Serializable
 data class Messages(
-        val sender: String,
-        val senderName: String,
-        val senderAvatar: String,
-        val content: MutableList<Content>
+    val sender: String,
+    val senderName: String,
+    val senderAvatar: String,
+    val content: MutableList<Content>
 )
 
 @Serializable
 data class Content(
-        val type: String,
-        val content: String
+    val type: String,
+    val content: String
 )
 
 data class RenderMessages(
-        val msgID: String,
-        val relationID: String,
-        val contactID: String,
-        val timeStamp: Long,
-        val messageContent: String
+    val msgID: String,
+    val relationID: String,
+    val contactID: String,
+    val timeStamp: Long,
+    val messageContent: String
 )
 
 object RelationQQ : Table("relationQQ") {

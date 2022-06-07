@@ -14,8 +14,8 @@ val groupListQQ = mutableStateListOf<Group>()
 val contactListQQ = mutableStateListOf<Friend>()
 val contactsMap = mutableMapOf<String, MutableMap<String, Contacts>>()
 
-lateinit var dbPath:String
-lateinit var dataDir:String
+lateinit var dbPath: String
+lateinit var dataDir: String
 lateinit var userQQBot: BotSets
 lateinit var relationQQ: Database
 lateinit var chatHistoryQQ: Database

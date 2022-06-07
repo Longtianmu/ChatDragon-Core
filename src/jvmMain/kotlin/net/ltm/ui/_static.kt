@@ -29,13 +29,13 @@ fun buildMessageCard(message: RenderMessages) {
     val messageList = rawMessage.content
     var template = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
     Card(modifier = Modifier.fillMaxWidth()) {
-        Row() {
-            Card() {
+        Row {
+            Card {
                 AsyncImage(
-                        load = { loadImageBitmap(senderAvatar) },
-                        painterFor = { remember { BitmapPainter(it) } },
-                        modifier = Modifier.size(48.dp).clip(RoundedCornerShape(5.dp)),
-                        contentDescription = "Sender Avatar"
+                    load = { loadImageBitmap(senderAvatar) },
+                    painterFor = { remember { BitmapPainter(it) } },
+                    modifier = Modifier.size(48.dp).clip(RoundedCornerShape(5.dp)),
+                    contentDescription = "Sender Avatar"
                 )
             }
             Card(modifier = Modifier.fillMaxWidth()) {
@@ -48,10 +48,10 @@ fun buildMessageCard(message: RenderMessages) {
                             }
                             "Image" -> {
                                 AsyncImage(
-                                        load = { loadImageBitmap(i.content) },
-                                        painterFor = { remember { BitmapPainter(it) } },
-                                        modifier = Modifier.clip(RoundedCornerShape(5.dp)),
-                                        contentDescription = "Message Images"
+                                    load = { loadImageBitmap(i.content) },
+                                    painterFor = { remember { BitmapPainter(it) } },
+                                    modifier = Modifier.clip(RoundedCornerShape(5.dp)),
+                                    contentDescription = "Message Images"
                                 )
                             }
                             else -> Text("WIP")
@@ -62,3 +62,4 @@ fun buildMessageCard(message: RenderMessages) {
         }
     }
 }
+

@@ -8,6 +8,8 @@ import net.ltm.datas.calculateRelationIDQQ
 import net.mamoe.mirai.BotFactory
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.utils.BotConfiguration
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 import java.io.File
@@ -43,14 +45,15 @@ suspend fun initQQ(qqid: String, password: String): String {
     userQQBot.userBot.friends.forEach {
         contactListQQ.add(it)
         contactsMap["QQ_Friend"]!![it.id.toString()] =
-                Contacts("QQ_Friend", it.id.toString(), it.nameCardOrNick, it.avatarUrl)
+            Contacts("QQ_Friend", it.id.toString(), it.nameCardOrNick, it.avatarUrl)
     }
     userQQBot.userBot.groups.forEach {
         groupListQQ.add(it)
         contactsMap["QQ_Group"]!![it.id.toString()] =
-                Contacts("QQ_Group", it.id.toString(), it.name, it.avatarUrl)
+            Contacts("QQ_Group", it.id.toString(), it.name, it.avatarUrl)
     }
     suspendedTransactionAsync(Dispatchers.IO, db = relationQQ) {
+        addLogger(StdOutSqlLogger)
         contactListQQ.forEach { friends ->
             RelationQQ.insert {
                 it[relationID] = calculateRelationIDQQ(userQQBot.userBot.id, friends.id.toString() + "QID")

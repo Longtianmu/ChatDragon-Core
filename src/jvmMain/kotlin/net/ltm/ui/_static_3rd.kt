@@ -26,11 +26,11 @@ import java.net.URL
 
 @Composable
 fun <T> AsyncImage(
-        load: suspend () -> T,
-        painterFor: @Composable (T) -> Painter,
-        contentDescription: String,
-        modifier: Modifier = Modifier,
-        contentScale: ContentScale = ContentScale.Fit,
+    load: suspend () -> T,
+    painterFor: @Composable (T) -> Painter,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Fit,
 ) {
     val image: T? by produceState<T?>(null) {
         value = withContext(Dispatchers.IO) {
@@ -47,10 +47,10 @@ fun <T> AsyncImage(
 
     if (image != null) {
         Image(
-                painter = painterFor(image!!),
-                contentDescription = contentDescription,
-                contentScale = contentScale,
-                modifier = modifier
+            painter = painterFor(image!!),
+            contentDescription = contentDescription,
+            contentScale = contentScale,
+            modifier = modifier
         )
     }
 }
@@ -58,35 +58,36 @@ fun <T> AsyncImage(
 /* Loading from file with java.io API */
 
 fun loadImageBitmap(file: File): ImageBitmap =
-        file.inputStream().buffered().use(::loadImageBitmap)
+    file.inputStream().buffered().use(::loadImageBitmap)
 
 fun loadSvgPainter(file: File, density: Density): Painter =
-        file.inputStream().buffered().use { androidx.compose.ui.res.loadSvgPainter(it, density) }
+    file.inputStream().buffered().use { androidx.compose.ui.res.loadSvgPainter(it, density) }
 
 fun loadXmlImageVector(file: File, density: Density): ImageVector =
-        file.inputStream().buffered().use { androidx.compose.ui.res.loadXmlImageVector(InputSource(it), density) }
+    file.inputStream().buffered().use { androidx.compose.ui.res.loadXmlImageVector(InputSource(it), density) }
 
 /* Loading from network with java.net API */
 
 fun loadImageBitmap(url: String): ImageBitmap =
-        URL(url).openStream().buffered().use(::loadImageBitmap)
+    URL(url).openStream().buffered().use(::loadImageBitmap)
 
 fun loadSvgPainter(url: String, density: Density): Painter =
-        URL(url).openStream().buffered().use { androidx.compose.ui.res.loadSvgPainter(it, density) }
+    URL(url).openStream().buffered().use { androidx.compose.ui.res.loadSvgPainter(it, density) }
 
 fun loadXmlImageVector(url: String, density: Density): ImageVector =
-        URL(url).openStream().buffered().use { androidx.compose.ui.res.loadXmlImageVector(InputSource(it), density) }
+    URL(url).openStream().buffered().use { androidx.compose.ui.res.loadXmlImageVector(InputSource(it), density) }
 
 fun downloadPicture(url: String) {
     val client = OkHttpClient()
     val request = Request.Builder().get()
-            .url(url)
-            .build()
+        .url(url)
+        .build()
     val response = client.newCall(request).execute()
     val types = response.headers["Content-Type"]?.toMediaType()?.subtype
     val inputStream = response.body!!.byteStream()
     val fos: FileOutputStream
-    val file = File("$dataDir/cache/qq/pictures/${userQQBot.userBot.id}/${convertUrlToValidFilePath(url)}")// :转换为~ /转换为% ?转换为+
+    val file =
+        File("$dataDir/cache/qq/pictures/${userQQBot.userBot.id}/${convertUrlToValidFilePath(url)}")// :转换为~ /转换为% ?转换为+
     if (!file.exists()) {
         file.mkdirs()
     }
@@ -104,3 +105,4 @@ fun downloadPicture(url: String) {
 fun convertUrlToValidFilePath(url: String): String {
     return url.replace(":", "~").replace("/", "%").replace("?", "+")
 }
+

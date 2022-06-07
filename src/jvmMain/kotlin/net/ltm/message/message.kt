@@ -1,6 +1,5 @@
 package net.ltm.message
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,107 +14,91 @@ import net.ltm.userQQBot
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.FriendMessageEvent
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.transaction
 
-fun messageListener(contacts: Contacts) {
+suspend fun insertMessageToDB(tmp: RenderMessages) {
+    newSuspendedTransaction {
+        addLogger(StdOutSqlLogger)
+        MessagesQQ.insert { msg ->
+            msg[relationID] = tmp.relationID
+            msg[timeStamp] = tmp.timeStamp
+            msg[msgID] = tmp.msgID
+            msg[contactID] = tmp.contactID
+            msg[messageContent] = tmp.messageContent
+        }
+    }
+}
+
+fun messageListener(contact: Contacts) {
     val currentID = userQQBot.userBot.id
-    when (contacts.type) {
+    val globalID = contact.id + when (contact.type) {
+        "QQ_Friend" -> "QID"
+        "QQ_Group" -> "GID"
+        else -> ""
+    }
+    val relation = calculateRelationIDQQ(currentID, globalID)
+    if (contact.type.contains("QQ")) {
+        transaction(chatHistoryQQ) {
+            MessagesQQ
+                .select { (MessagesQQ.relationID eq relation) and (MessagesQQ.contactID eq globalID) }
+                .orderBy(MessagesQQ.timeStamp to SortOrder.DESC)
+                .limit(50, 0).forEach {
+                    contact.addHistory(
+                        RenderMessages(
+                            it[MessagesQQ.msgID],
+                            it[MessagesQQ.relationID],
+                            it[MessagesQQ.contactID],
+                            it[MessagesQQ.timeStamp],
+                            it[MessagesQQ.messageContent]
+                        )
+                    )
+                }
+        }
+    }
+    contact.history.sortBy { it.timeStamp }
+    when (contact.type) {
         "QQ_Friend" -> {
             userQQBot.userBot.eventChannel.subscribeAlways<FriendMessageEvent> {
-                if (it.sender.id == contacts.id.toLong()) {
-                    val relations = calculateRelationIDQQ(currentID, it.sender.id.toString() + "QID")
+                if (it.sender.id == contact.id.toLong()) {
                     val times = it.time.toLong()
-                    newSuspendedTransaction(Dispatchers.IO, chatHistoryQQ) {
-                        var result: String
-                        withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
-                            result = convertMiraiMessageToJson(
-                                    it.sender.id.toString(),
-                                    it.sender.nameCardOrNick,
-                                    it.sender.avatarUrl,
-                                    it.message
-                            )
-                        }
-                        MessagesQQ.insert { msg ->
-                            msg[relationID] = relations
-                            msg[timeStamp] = times
-                            msg[msgID] = calculateMsgIDQQ(relations, times)
-                            msg[contactID] = contacts.id + "QID"
-                            msg[messageContent] = result
-                        }
-                        commit()
+                    val msgs = calculateMsgIDQQ(relation, times)
+                    var result: String
+                    withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
+                        result = convertMiraiMessageToJson(
+                            it.sender.id.toString(),
+                            it.sender.nameCardOrNick,
+                            it.sender.avatarUrl,
+                            it.message
+                        )
                     }
+                    val tmp = RenderMessages(msgs, relation, globalID, times, result)
+                    contact.addHistory(tmp)
+                    insertMessageToDB(tmp)
                 }
             }
         }
         "QQ_Group" -> {
             userQQBot.userBot.eventChannel.subscribeAlways<GroupMessageEvent> {
-                if (it.group.id == contacts.id.toLong()) {
-                    val relations = calculateRelationIDQQ(currentID, it.group.id.toString() + "GID")
+                if (it.group.id == contact.id.toLong()) {
                     val times = it.time.toLong()
-                    newSuspendedTransaction(Dispatchers.IO, chatHistoryQQ) {
-                        var result: String
-                        withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
-                            result = convertMiraiMessageToJson(
-                                    it.sender.id.toString(),
-                                    it.sender.nameCardOrNick,
-                                    it.sender.avatarUrl,
-                                    it.message
-                            )
-                        }
-                        MessagesQQ.insert { msg ->
-                            msg[relationID] = relations
-                            msg[timeStamp] = times
-                            msg[msgID] = calculateMsgIDQQ(relations, times)
-                            msg[contactID] = contacts.id + "GID"
-                            msg[messageContent] = result
-                        }
-                        commit()
+                    val msgs = calculateMsgIDQQ(relation, times)
+                    var result: String
+                    withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
+                        result = convertMiraiMessageToJson(
+                            it.sender.id.toString(),
+                            it.sender.nameCardOrNick,
+                            it.sender.avatarUrl,
+                            it.message
+                        )
                     }
+                    val tmp = RenderMessages(msgs, relation, globalID, times, result)
+                    contact.addHistory(tmp)
+                    insertMessageToDB(tmp)
                 }
             }
         }
     }
 }
 
-fun simpleMessageListenerForChatUI(contacts: Contacts, history: SnapshotStateList<RenderMessages>) {
-    val currentID = userQQBot.userBot.id
-    when (contacts.type) {
-        "QQ_Friend" -> {
-            userQQBot.userBot.eventChannel.subscribeAlways<FriendMessageEvent> {
-                if (it.sender.id == contacts.id.toLong()) {
-                    val relations = calculateRelationIDQQ(currentID, it.sender.id.toString() + "QID")
-                    val times = it.time.toLong()
-                    var result: String
-                    withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
-                        result = convertMiraiMessageToJson(
-                                it.sender.id.toString(),
-                                it.sender.nameCardOrNick,
-                                it.sender.avatarUrl,
-                                it.message
-                        )
-                    }
-                    history.add(RenderMessages("", "", "", it.time.toLong(), result))
-                }
-            }
-        }
-        "QQ_Group" -> {
-            userQQBot.userBot.eventChannel.subscribeAlways<GroupMessageEvent> {
-                if (it.group.id == contacts.id.toLong()) {
-                    val relations = calculateRelationIDQQ(currentID, it.group.id.toString() + "GID")
-                    val times = it.time.toLong()
-                    var result: String
-                    withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
-                        result = convertMiraiMessageToJson(
-                                it.sender.id.toString(),
-                                it.sender.nameCardOrNick,
-                                it.sender.avatarUrl,
-                                it.message
-                        )
-                    }
-                    history.add(RenderMessages("", "", "", it.time.toLong(), result))
-                }
-            }
-        }
-    }
-}
