@@ -49,13 +49,27 @@ jobs:
           name: Windows Msi
           path: ./build/compose/binaries/main/msi
           
-      - name: Upload Linux Packages
+      - name: Upload Linux Packages-Deb
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v3
         with:
           name: Linux Deb
           path: ./build/compose/binaries/main/deb
-          
+
+      - name: Upload Linux Packages-Rpm
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Linux Rpm
+          path: ./build/compose/binaries/main/rpm
+
+      - name: Upload Linux Packages-AppImage
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Linux AppImage
+          path: ./build/compose/binaries/main/appimage
+
       - name: Upload macOS Packages
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v3
@@ -70,16 +84,17 @@ jobs:
           name: Windows Jar
           path: ./build/compose/jars
 
-      - name: Upload Linux Packages
+      - name: Upload Linux Jar
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v3
         with:
           name: Linux Jar
           path: ./build/compose/jars
 
-      - name: Upload macOS Packages
+      - name: Upload macOS Jar
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v3
         with:
           name: macOS Jar
           path: ./build/compose/jars
+
