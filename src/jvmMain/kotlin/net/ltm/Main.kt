@@ -1,5 +1,3 @@
-@file:JvmName("net.ltm.MainKt")
-
 package net.ltm
 
 import androidx.compose.ui.window.Window

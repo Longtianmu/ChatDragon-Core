@@ -3,9 +3,8 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose")
-    id("com.github.johnrengelman.shadow") version "7.1.2"
     kotlin("plugin.serialization") version "1.6.10"
+    id("org.jetbrains.compose")
 }
 
 group = "net.ltm"
@@ -20,7 +19,7 @@ repositories {
 }
 
 val exposedVersion: String = "0.38.2"
-val decomposeVersion: String = "0.6.0-native-compose-01"
+
 kotlin {
     jvm {
         compilations.all {
@@ -36,7 +35,6 @@ kotlin {
                 implementation("org.apache.logging.log4j:log4j-api:2.17.2")
                 implementation("org.apache.logging.log4j:log4j-core:2.17.2")
                 implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
-                implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
                 implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
                 implementation("io.ktor:ktor-client-cio:1.6.7")
                 implementation("org.xerial:sqlite-jdbc:3.30.1")
@@ -51,11 +49,10 @@ kotlin {
 
 compose.desktop {
     application {
-        javaHome = System.getenv("JDK_17")
         mainClass = "net.ltm.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            includeAllModules = true
+            modules("java.sql", "java.management")
             packageName = "Chat-Dragon"
             packageVersion = "1.0.0"
             vendor = "Longtianmu"
