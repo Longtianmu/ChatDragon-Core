@@ -29,23 +29,22 @@ jobs:
         with:
           version: 1.6.10
           
-      - name: PrepareKotlincEnv
-        run: kotlinc -script build.gradle.kts
-
-      - name: GradleBuild
-        run: ./gradlew package
+      - name: Gradle Build
+        run: |
+          chmod +x gradlew
+          ./gradlew package
           
-      - name: UploadWindows
+      - name: Upload Windows Package
         uses: actions/upload-artifact@v3.1.0
         with:
-          path: ./build/composecbinaries/main/msi
+          path: ./build/compose/binaries/main/msi
           
-      - name: UploadLinux
+      - name: Upload Linux Package
         uses: actions/upload-artifact@v3.1.0
         with:
-          path: ./build/composecbinaries/main/deb
+          path: ./build/compose/binaries/main/deb
           
-      - name: UploadmacOS
+      - name: Upload macOS Package
         uses: actions/upload-artifact@v3.1.0
         with:
-          path: ./build/composecbinaries/main/dmg
+          path: ./build/compose/binaries/main/dmg
