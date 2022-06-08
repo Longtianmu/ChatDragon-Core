@@ -42,7 +42,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           chmod +x gradlew
-          ./gradlew packageDmg
+          ./gradlew package -Pmacos
 
       - name: Gradle Build Jar
         run: |
