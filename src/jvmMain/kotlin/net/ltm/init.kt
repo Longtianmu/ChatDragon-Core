@@ -17,7 +17,9 @@ fun initApp() {
         "${System.getenv("AppData")}\\Chat-Dragon"
     } else if (os.startsWith("linux")) {
         "${System.getenv("username")}/.local/share/Chat-Dragon"
-    } else {
+    } else if (os.contains("darwin")) {
+        "${System.getenv("HOME")}/Library/Application Support/Chat-Dragon"
+    }else{
         exitProcess(-1)
     }
     dbPath = "$dataDir/data"
