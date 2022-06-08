@@ -50,7 +50,7 @@ compose.desktop {
     application {
         mainClass = "net.ltm.MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             modules("java.sql", "java.management")
             packageName = "Chat-Dragon"
             packageVersion = "1.0.0"
