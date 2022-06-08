@@ -32,10 +32,17 @@ jobs:
         with:
           version: 1.6.10
           
-      - name: Gradle Build Packages
+      - name: Gradle Build Packages Except macOS
+        if: runner.os != 'macOS'
         run: |
           chmod +x gradlew
           ./gradlew package
+
+      - name: Gradle Build Packages for macOS
+        if: runner.os == 'macOS'
+        run: |
+          chmod +x gradlew
+          ./gradlew packageDmg
 
       - name: Gradle Build Jar
         run: |
