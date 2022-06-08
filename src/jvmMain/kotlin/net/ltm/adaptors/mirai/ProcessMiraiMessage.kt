@@ -11,7 +11,6 @@ import net.ltm.ui.downloadPicture
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 
-
 suspend fun convertMiraiMessageToJson(
     sender: String, senderName: String, senderAvatar: String, message: MessageChain
 ): String {

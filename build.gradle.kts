@@ -7,6 +7,7 @@ plugins {
     id("org.jetbrains.compose")
 }
 
+val exposedVersion: String = "0.38.2"
 group = "net.ltm"
 version = "1.0-SNAPSHOT"
 
@@ -18,12 +19,10 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val exposedVersion: String = "0.38.2"
-
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
+            kotlinOptions.jvmTarget = "11"
             kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
         }
         withJava()

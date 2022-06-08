@@ -11,6 +11,6 @@ A Multi Chat Client
 
 可在Action内下载最新构建
 
-Jar包需要本机有Java 8及以上的运行环境，且需要下载对应系统架构的Jar包
+Jar包需要本机有Java 11及以上的运行环境，且需要下载对应系统架构的Jar包
 
 Deb/Msi/Dmg安装包内置JVM环境，体积略大
