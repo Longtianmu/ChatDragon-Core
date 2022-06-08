@@ -63,3 +63,7 @@ compose.desktop {
         }
     }
 }
+
+tasks.withType<org.gradle.jvm.tasks.Jar>() {
+    exclude("META-INF/*.RSA", "META-INF/*.DSA", "META-INF/*.SF")
+}
