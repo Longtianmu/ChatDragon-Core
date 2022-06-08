@@ -32,17 +32,10 @@ jobs:
         with:
           version: 1.6.10
           
-      - name: Gradle Build Packages Except macOS
-        if: runner.os != 'macOS'
+      - name: Gradle Build Packages
         run: |
           chmod +x gradlew
           ./gradlew package
-
-      - name: Gradle Build Packages for macOS
-        if: runner.os == 'macOS'
-        run: |
-          chmod +x gradlew
-          ./gradlew package -Pmacos
 
       - name: Gradle Build Jar
         run: |
@@ -62,20 +55,6 @@ jobs:
         with:
           name: Linux Deb
           path: ./build/compose/binaries/main/deb
-
-      - name: Upload Linux Packages-Rpm
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
-        with:
-          name: Linux Rpm
-          path: ./build/compose/binaries/main/rpm
-
-      - name: Upload Linux Packages-AppImage
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
-        with:
-          name: Linux AppImage
-          path: ./build/compose/binaries/main/appimage
 
       - name: Upload macOS Packages
         if: runner.os == 'macOS'
