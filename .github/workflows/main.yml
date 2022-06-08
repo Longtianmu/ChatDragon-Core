@@ -37,14 +37,17 @@ jobs:
       - name: Upload Windows Package
         uses: actions/upload-artifact@v3.1.0
         with:
+          name: Windows Msi
           path: ./build/compose/binaries/main/msi
           
       - name: Upload Linux Package
         uses: actions/upload-artifact@v3.1.0
         with:
+          name: Linux Deb
           path: ./build/compose/binaries/main/deb
           
       - name: Upload macOS Package
         uses: actions/upload-artifact@v3.1.0
         with:
+          name: macOS Dmg
           path: ./build/compose/binaries/main/dmg
