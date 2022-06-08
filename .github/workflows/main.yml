@@ -29,7 +29,6 @@ jobs:
           run: kotlinc -script build.gradle.kts
 
       - name: GradleBuild
-        uses: gradle/gradle-build-action@v2
         with:
           run: ./gradlew package
           
