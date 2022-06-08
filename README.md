@@ -1,4 +1,4 @@
-# Chat-Dragon [![BuildPackage](https://github.com/Longtianmu/Chat-Dragon/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/Longtianmu/Chat-Dragon/actions/workflows/main.yml)
+# Chat-Dragon [![BuildPackage](https://github.com/Longtianmu/Chat-Dragon/actions/workflows/main.yml/badge.svg)](https://github.com/Longtianmu/Chat-Dragon/actions/workflows/main.yml/badge.svg)
 A Multi Chat Client
 
 尝试把QQ Telegram Discord集成在一起提供统一的交互体验
