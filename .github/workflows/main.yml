@@ -1,53 +1,50 @@
-name: BuildPackage
-
-on: [workflow_dispatch,push]
+name: Build Package
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
 
 jobs:
-
-  buildAllPackage:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-20.04, windows-latest, macos-latest ]
-
+  build-all-packs:
+    runs-on: [ ubuntu-latest, windows-latest, macos-latest ]
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup JDK
-        uses: actions/setup-java@v3.3.0
+      - name: Get files in repo
+        uses: actions/checkout@v3
+      - name: Setup OpenJDK
+        uses: actions/setup-java@v3
         with:
-          distribution: 'corretto'
+          distribution: 'microsoft'
           java-version: '17'
-          
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.3.3
-          
+          gradle-version: 7
       - name: Setup Kotlin
-        uses: fwilhe2/setup-kotlin@0.2.0
+        uses: fwilhe2/setup-kotlin@0.2
         with:
-          version: 1.6.10
-          
-      - name: Gradle Build
+          version: 1.6
+      - name: Prepare Kotlinc Environment
+        run: kotlinc -script build.gradle.kts
+      - name: Gradle Build Packages
         run: |
           chmod +x gradlew
           ./gradlew package
-          
-      - name: Upload Windows Package
-        uses: actions/upload-artifact@v3.1.0
+      - name: Upload Windows Packages
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v3
         with:
           name: Windows Msi
           path: ./build/compose/binaries/main/msi
-          
-      - name: Upload Linux Package
-        uses: actions/upload-artifact@v3.1.0
+      - name: Upload Linux Packages
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v3
         with:
           name: Linux Deb
           path: ./build/compose/binaries/main/deb
-          
-      - name: Upload macOS Package
-        uses: actions/upload-artifact@v3.1.0
+      - name: Upload macOS Packages
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
         with:
           name: macOS Dmg
           path: ./build/compose/binaries/main/dmg
