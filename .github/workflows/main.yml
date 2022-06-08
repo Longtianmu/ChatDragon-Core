@@ -1,4 +1,4 @@
-name: Build Package
+name: Build
 on:
   workflow_dispatch:
   push:
@@ -11,37 +11,42 @@ jobs:
     steps:
       - name: Get files in repo
         uses: actions/checkout@v3
+        
       - name: Setup OpenJDK
         uses: actions/setup-java@v3
         with:
           distribution: 'microsoft'
           java-version: '17'
+          
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7
+          gradle-version: 7.3.3
+          
       - name: Setup Kotlin
         uses: fwilhe2/setup-kotlin@0.2
         with:
-          version: 1.6
-      - name: Prepare Kotlinc Environment
-        run: kotlinc -script build.gradle.kts
+          version: 1.6.10
+          
       - name: Gradle Build Packages
         run: |
           chmod +x gradlew
           ./gradlew package
+          
       - name: Upload Windows Packages
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v3
         with:
           name: Windows Msi
           path: ./build/compose/binaries/main/msi
+          
       - name: Upload Linux Packages
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v3
         with:
           name: Linux Deb
           path: ./build/compose/binaries/main/deb
+          
       - name: Upload macOS Packages
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v3
