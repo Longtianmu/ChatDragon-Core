@@ -3,6 +3,7 @@ package net.ltm.contact
 import androidx.compose.runtime.mutableStateListOf
 import net.ltm.datas.RenderMessages
 import net.ltm.message.messageListener
+import net.ltm.ui.downloadPicture
 
 class Contacts() {
     var id: String = ""
@@ -17,6 +18,11 @@ class Contacts() {
         this.name = name
         this.avatar = avatar
         this.type = type
+        try {
+            downloadPicture(avatar)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         messageListener(this)
     }
 

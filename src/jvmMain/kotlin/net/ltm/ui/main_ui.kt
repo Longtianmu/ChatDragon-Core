@@ -94,16 +94,25 @@ fun SessionList() {
                 items(groupListQQ) {
                     Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
                         .clickable {
-                            selected.value = Pair("Clear", "")
                             sleep(10)
                             selected.value = Pair("QQ_Group", it.id.toString())
                         }) {
                         Row {
-                            Image(
-                                painter = rememberImagePainter(it.avatarUrl),
-                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
-                                contentDescription = "Group Avatar"
-                            )
+                            val res = checkCacheImageExists(it.avatarUrl)
+                            if (res.exists) {
+                                Image(
+                                    painter = rememberImagePainter(res.imageFile),
+                                    modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                                    contentDescription = "Group Avatar"
+                                )
+                            } else {
+                                downloadPicture(it.avatarUrl)
+                                Image(
+                                    painter = rememberImagePainter(it.avatarUrl),
+                                    modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                                    contentDescription = "Group Avatar"
+                                )
+                            }
                             Box(modifier = Modifier.padding(4.dp).fillMaxSize()) {
                                 Text(text = it.name)
                             }
@@ -113,16 +122,25 @@ fun SessionList() {
                 items(contactListQQ) {
                     Box(modifier = Modifier.align(Alignment.Center).fillMaxSize().clip(RoundedCornerShape(5.dp))
                         .clickable {
-                            selected.value = Pair("Clear", "")
                             sleep(10)
                             selected.value = Pair("QQ_Friend", it.id.toString())
                         }) {
                         Row {
-                            Image(
-                                painter = rememberImagePainter(it.avatarUrl),
-                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
-                                contentDescription = "Friend Avatar"
-                            )
+                            val res = checkCacheImageExists(it.avatarUrl)
+                            if (res.exists) {
+                                Image(
+                                    painter = rememberImagePainter(res.imageFile),
+                                    modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                                    contentDescription = "Contact Avatar"
+                                )
+                            } else {
+                                downloadPicture(it.avatarUrl)
+                                Image(
+                                    painter = rememberImagePainter(it.avatarUrl),
+                                    modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                                    contentDescription = "Contact Avatar"
+                                )
+                            }
                             Box(modifier = Modifier.padding(4.dp).fillMaxSize()) {
                                 Text(text = it.nameCardOrNick)
                             }
@@ -136,11 +154,7 @@ fun SessionList() {
                 )
             )
         }
-        if (selected.value.first == "Clear") {
-            Card(modifier = Modifier.fillMaxSize()) {
-                Text("", modifier = Modifier.fillMaxSize())
-            }
-        } else if (selected.value.first != "None") {
+        if (selected.value.first != "None") {
             contactsMap[selected.value.first]?.get(selected.value.second)?.let { ChatUI(it) }
         }
     }

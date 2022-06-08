@@ -29,9 +29,9 @@ class BotSets(qq: Long, password: String) {
 
 suspend fun initQQ(qqid: String, password: String): String {
     val processQQID = qqid.replace(" ", "").replace("\n", "")
-    if (!processQQID.matches(Regex("[1-9]([0-9]{5,11})"))) {
-        return "非法的QQ号!"
-    }
+        if (!processQQID.matches(Regex("[1-9]([0-9]{5,11})"))) {
+            return "非法的QQ号!"
+        }
     userQQBot = BotSets(processQQID.toLong(), password)
     try {
         userQQBot.userBot.login()

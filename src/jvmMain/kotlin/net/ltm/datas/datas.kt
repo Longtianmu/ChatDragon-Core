@@ -2,6 +2,7 @@ package net.ltm.datas
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
+import java.io.File
 import java.util.*
 
 fun calculateRelationIDQQ(userID: Long, contactID: String): String {
@@ -11,6 +12,11 @@ fun calculateRelationIDQQ(userID: Long, contactID: String): String {
 fun calculateMsgIDQQ(relationID: String, timeStamp: Long): String {
     return Base64.getEncoder().encodeToString((timeStamp.toString() + relationID).toByteArray())
 }
+
+data class CheckImage(
+    val exists: Boolean,
+    val imageFile: File
+)
 
 @Serializable
 data class Messages(

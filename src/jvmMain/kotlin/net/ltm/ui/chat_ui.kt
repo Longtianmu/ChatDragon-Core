@@ -47,14 +47,23 @@ fun ContactBar(contact: Contacts) {
         Row {
             Box {
                 Row {
-                    Image(
-                        painter = rememberImagePainter(contact.avatar),
-                        modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
-                        contentDescription = "Contacts Avatar"
-                    )
+                    val res = checkCacheImageExists(contact.avatar)
+                    if (res.exists) {
+                        Image(
+                            painter = rememberImagePainter(res.imageFile),
+                            modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                            contentDescription = "Contacts Avatar"
+                        )
+                    } else {
+                        downloadPicture(contact.avatar)
+                        Image(
+                            painter = rememberImagePainter(contact.avatar),
+                            modifier = Modifier.size(64.dp).clip(RoundedCornerShape(5.dp)),
+                            contentDescription = "Contacts Avatar"
+                        )
+                    }
                     Text(contact.name, modifier = Modifier.padding(10.dp))
                 }
-
             }
             Text(contact.type, modifier = Modifier.padding(10.dp))
             Text(contact.id, modifier = Modifier.padding(10.dp))
@@ -64,7 +73,7 @@ fun ContactBar(contact: Contacts) {
 
 @Composable
 fun ChatBar(contact: Contacts) {
-    val state = rememberLazyListState(0)
+    val state = rememberLazyListState()
     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.70f)) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp),

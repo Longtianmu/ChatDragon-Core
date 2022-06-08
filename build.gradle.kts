@@ -38,6 +38,7 @@ kotlin {
                 implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
                 implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
                 implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+                implementation("io.ktor:ktor-client-cio:1.6.7")
                 implementation("org.xerial:sqlite-jdbc:3.30.1")
                 implementation("com.github.ltttttttttttt:load-the-image:1.0.1")
                 implementation("com.github.app-outlet:karavel:1.0.0")
