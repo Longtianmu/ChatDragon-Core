@@ -36,6 +36,11 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew package
+
+      - name: Gradle Build Jar
+        run: |
+          chmod +x gradlew
+          ./gradlew packageUberJarForCurrentOS
           
       - name: Upload Windows Packages
         if: runner.os == 'Windows'
@@ -57,3 +62,24 @@ jobs:
         with:
           name: macOS Dmg
           path: ./build/compose/binaries/main/dmg
+
+      - name: Upload Windows Jar
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Windows Jar
+          path: ./build/compose/jars
+
+      - name: Upload Linux Packages
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Linux Jar
+          path: ./build/compose/jars
+
+      - name: Upload macOS Packages
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: macOS Jar
+          path: ./build/compose/jars
