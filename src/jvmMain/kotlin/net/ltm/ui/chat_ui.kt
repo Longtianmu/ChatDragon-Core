@@ -4,8 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
@@ -73,8 +73,8 @@ fun ContactBar(contact: Contacts) {
 
 @Composable
 fun ChatBar(contact: Contacts) {
-    val state = rememberLazyListState()
     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.70f)) {
+        val state = LazyListState(contact.history.size)
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.fillMaxSize().matchParentSize(),
