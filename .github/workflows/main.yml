@@ -30,7 +30,9 @@ jobs:
           version: 1.6.10
           
       - name: Gradle Build
-        run: ./gradlew package
+        run: |
+          chmod +x gradlew
+          ./gradlew package
           
       - name: Upload Windows Package
         uses: actions/upload-artifact@v3.1.0
